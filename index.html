@@ -1,0 +1,1143 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pilas</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='b' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%236E8FFF'/%3E%3Cstop offset='1' stop-color='%232A4FE6'/%3E%3C/linearGradient%3E%3ClinearGradient id='a' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23FFD166'/%3E%3Cstop offset='1' stop-color='%23F0A21C'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='32' fill='url%28%23b%29'/%3E%3Crect x='26' y='11' width='12' height='7' rx='2.5' fill='%23fff'/%3E%3Crect x='14' y='17' width='36' height='32' rx='10' fill='%23fff'/%3E%3Ccircle cx='25' cy='31' r='4.8' fill='%23fff' stroke='%2314204F' stroke-width='1.6'/%3E%3Ccircle cx='39' cy='31' r='4.8' fill='%23fff' stroke='%2314204F' stroke-width='1.6'/%3E%3Ccircle cx='27.3' cy='31.4' r='2.4' fill='%2314204F'/%3E%3Ccircle cx='41.3' cy='31.4' r='2.4' fill='%2314204F'/%3E%3Cpath d='M20.5 24.6h8M35 22.6q4.5-2.8 8.8.6M28 41.2q4.5 1.6 8.5-1.6' stroke='%2314204F' stroke-width='2.4' stroke-linecap='round' fill='none'/%3E%3Ccircle cx='47' cy='47' r='8' fill='url%28%23a%29' stroke='%23fff' stroke-width='2'/%3E%3Cpath d='M47 42.6v5' stroke='%23fff' stroke-width='2.6' stroke-linecap='round'/%3E%3Ccircle cx='47' cy='51' r='1.5' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+/* Tokens tomados de deepseek-ai/chat-demo (src/app/theme.css) */
+:root {
+  --brand:#3964FE; --brand-hover:#5686FE; --brand-text:#3964FE;
+  --bg:#FFFFFF; --sider:#F9FAFB; --nav-hover:#F1F3F5; --nav-active:#E4EDFD; --bubble:#EDF3FE; --input:#FFFFFF;
+  --text:#0F1115; --text2:#61666B; --text3:#81858C;
+  --b1:rgba(0,0,0,.04); --b2:rgba(0,0,0,.10); --b3:rgba(0,0,0,.12);
+  --hover:rgba(38,49,72,.06); --active:rgba(38,49,72,.10);
+  --shadow:0 0 1px 0 rgba(0,0,0,.2),0 0 4px 0 rgba(0,0,0,.02),0 12px 32px 0 rgba(0,0,0,.08);
+  --ok:#15803d; --ok-bg:#f0fdf4; --warn:#b45309; --warn-bg:#fffbeb; --danger:#c81010; --danger-bg:#fef2f2;
+  --fs:16px; color-scheme:light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --brand:#5686FE; --brand-hover:#3964FE; --brand-text:#679EFE;
+    --bg:#151517; --sider:#1B1B1C; --nav-hover:#2C2C2E; --nav-active:#353638; --bubble:#2C2C2E; --input:#2C2C2E;
+    --text:#F9FAFB; --text2:#CFD3D6; --text3:#ADB2B8;
+    --b1:rgba(255,255,255,.06); --b2:rgba(255,255,255,.12); --b3:rgba(255,255,255,.16);
+    --hover:rgba(255,255,255,.08); --active:rgba(255,255,255,.14);
+    --ok:#4ade80; --ok-bg:rgba(74,222,128,.08); --warn:#f1bd7b; --warn-bg:rgba(241,189,123,.08); --danger:#F25A5A; --danger-bg:rgba(242,90,90,.08);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"] {
+  --brand:#5686FE; --brand-hover:#3964FE; --brand-text:#679EFE;
+  --bg:#151517; --sider:#1B1B1C; --nav-hover:#2C2C2E; --nav-active:#353638; --bubble:#2C2C2E; --input:#2C2C2E;
+  --text:#F9FAFB; --text2:#CFD3D6; --text3:#ADB2B8;
+  --b1:rgba(255,255,255,.06); --b2:rgba(255,255,255,.12); --b3:rgba(255,255,255,.16);
+  --hover:rgba(255,255,255,.08); --active:rgba(255,255,255,.14);
+  --ok:#4ade80; --ok-bg:rgba(74,222,128,.08); --warn:#f1bd7b; --warn-bg:rgba(241,189,123,.08); --danger:#F25A5A; --danger-bg:rgba(242,90,90,.08);
+  color-scheme:dark;
+}
+:root[data-size="sm"] { --fs:14px; } :root[data-size="lg"] { --fs:18px; } :root[data-size="xl"] { --fs:20px; }
+
+* { box-sizing:border-box; }
+html { font-size:var(--fs); }
+body { margin:0; background:var(--bg); color:var(--text);
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',sans-serif; }
+button { font:inherit; color:inherit; cursor:pointer; }
+:focus-visible { outline:2px solid var(--brand); outline-offset:2px; }
+.sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+
+.app { position:fixed; inset:0; display:flex; }
+/* Barra lateral */
+.sider { width:260px; flex-shrink:0; background:var(--sider); border-right:1px solid var(--b1); display:flex; flex-direction:column; gap:6px; padding:14px 12px; }
+.brand { display:flex; align-items:center; gap:10px; padding:4px 8px 12px; font-size:1.3rem; font-weight:700; color:var(--brand-text); }
+.logo { width:32px; height:32px; border-radius:50%; display:block; flex-shrink:0; }
+.logo svg { width:100%; height:100%; display:block; }
+.new-chat { display:flex; align-items:center; justify-content:center; gap:8px; height:40px; border:1px solid var(--b2); border-radius:12px; background:var(--bg); margin-bottom:10px; transition:background .2s; }
+.new-chat:hover { background:var(--nav-hover); }
+.nav-btn { display:flex; align-items:center; gap:10px; width:100%; padding:10px 12px; border:0; border-radius:12px; background:transparent; text-align:left; transition:background .2s; }
+.nav-btn svg { width:18px; height:18px; flex-shrink:0; }
+.nav-btn:hover { background:var(--nav-hover); }
+.nav-btn[aria-current="page"] { background:var(--nav-active); color:var(--brand-text); font-weight:600; }
+.sider-foot { margin-top:auto; border-top:1px solid var(--b2); padding-top:12px; display:flex; flex-direction:column; gap:8px; font-size:.85rem; color:var(--text2); }
+.row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.seg { display:flex; border:1px solid var(--b2); border-radius:10px; overflow:hidden; }
+.seg button { border:0; background:transparent; padding:6px 10px; min-width:36px; }
+.seg button:hover { background:var(--hover); }
+.seg button[aria-pressed="true"] { background:var(--nav-active); color:var(--brand-text); font-weight:600; }
+
+/* Zona principal */
+.main { flex:1; min-width:0; display:flex; flex-direction:column; }
+.topbar { display:none; align-items:center; gap:8px; padding:10px 12px; border-bottom:1px solid var(--b1); }
+.icon-btn { width:40px; height:40px; border:0; border-radius:10px; background:transparent; display:grid; place-items:center; }
+.icon-btn:hover { background:var(--hover); }
+.icon-btn svg { width:22px; height:22px; }
+.view { flex:1; min-height:0; display:flex; flex-direction:column; }
+.view[hidden] { display:none; }
+.scroll { flex:1; overflow-y:auto; }
+.list { max-width:840px; margin:0 auto; padding:28px 44px 12px; display:flex; flex-direction:column; gap:22px; }
+
+.welcome { text-align:center; margin:9vh auto 0; max-width:640px; }
+.welcome .logo { width:72px; height:72px; margin:0 auto 14px; }
+.welcome h1 { font-size:1.5rem; line-height:1.4; margin:0 0 6px; }
+.welcome p { color:var(--text2); margin:0 0 24px; line-height:1.6; }
+.cards { display:grid; grid-template-columns:1fr 1fr; gap:10px; text-align:left; }
+.card { text-align:left; border:1px solid var(--b2); border-radius:16px; background:var(--bg); padding:14px 16px; line-height:1.45; transition:background .2s,border-color .2s; }
+.card:hover { background:var(--hover); border-color:var(--brand); }
+.card b { display:block; font-size:.8rem; color:var(--brand-text); margin-bottom:4px; }
+
+.msg.user { align-self:flex-end; max-width:80%; }
+.bubble { background:var(--bubble); padding:10px 16px; border-radius:20px; line-height:1.6; white-space:pre-wrap; overflow-wrap:anywhere; }
+.msg.bot { display:flex; gap:12px; align-items:flex-start; }
+.msg.bot .logo { width:32px; height:32px; margin-top:2px; }
+.content { flex:1; min-width:0; line-height:1.75; }
+.content p { margin:0 0 6px; } .content p:last-child { margin-bottom:0; }
+.content ul, .content ol { margin:4px 0 0; padding-left:22px; }
+.meta { display:inline-flex; align-items:center; gap:6px; margin-top:8px; padding:2px 10px; border-radius:999px; background:var(--hover); color:var(--text2); font-size:.78rem; line-height:1.8; }
+.nivel { border-left:4px solid; border-radius:4px 12px 12px 4px; padding:8px 14px; }
+.nivel.n0 { border-color:var(--ok); background:var(--ok-bg); }
+.nivel.n1 { border-color:var(--warn); background:var(--warn-bg); }
+.nivel.n2 { border-color:var(--danger); background:var(--danger-bg); }
+.nivel .tag { font-weight:700; }
+.n0 .tag { color:var(--ok); } .n1 .tag { color:var(--warn); } .n2 .tag { color:var(--danger); }
+.typing { display:flex; gap:5px; padding:12px 0; }
+.typing span { width:7px; height:7px; border-radius:50%; background:var(--text3); animation:blink 1.2s infinite; }
+.typing span:nth-child(2) { animation-delay:.2s; } .typing span:nth-child(3) { animation-delay:.4s; }
+@keyframes blink { 0%,80%,100% { opacity:.25; } 40% { opacity:1; } }
+
+.composer { width:100%; max-width:840px; margin:0 auto; padding:6px 44px 12px; }
+.chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
+.chip { border:1px solid var(--b2); background:var(--bg); border-radius:999px; padding:7px 14px; min-height:36px; font-size:.9rem; transition:background .2s,border-color .2s; }
+.chip:hover { background:var(--hover); border-color:var(--brand); color:var(--brand-text); }
+.attach { width:38px; height:38px; flex-shrink:0; border:0; border-radius:50%; background:transparent; color:var(--text2); display:grid; place-items:center; transition:background .2s,color .2s; }
+.attach:hover { background:var(--hover); color:var(--brand-text); }
+.attach svg { width:20px; height:20px; }
+.preview { display:flex; align-items:center; gap:10px; width:fit-content; max-width:100%; margin-bottom:10px; padding:6px 8px; border:1px solid var(--b2); border-radius:14px; }
+.preview[hidden] { display:none; }
+.preview img { width:52px; height:52px; object-fit:cover; border-radius:10px; }
+.preview span { font-size:.85rem; color:var(--text2); max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.preview button { width:28px; height:28px; border:0; border-radius:50%; background:var(--hover); }
+.bubble img { display:block; max-width:min(260px,100%); border-radius:12px; margin:2px 0 6px; }
+.ocr { margin:6px 0; padding:8px 12px; border-left:3px solid var(--b3); color:var(--text2); font-size:.9rem; max-height:9em; overflow:auto; }
+code.hash { font-family:Menlo,Consolas,monospace; font-size:.8rem; background:var(--hover); padding:2px 6px; border-radius:6px; word-break:break-all; }
+.typing-label { color:var(--text2); font-size:.85rem; margin-left:6px; align-self:center; }
+.input-box { display:flex; align-items:flex-end; gap:8px; background:var(--input); border:1px solid var(--b2); border-radius:24px; padding:10px 10px 10px 8px; box-shadow:var(--shadow); transition:border-color .2s; }
+.input-box:focus-within { border-color:var(--brand); }
+.input-box textarea { flex:1; border:0; outline:0; resize:none; background:transparent; color:inherit; font:inherit; line-height:1.5; max-height:180px; padding:6px 0; }
+.input-box textarea::placeholder { color:var(--text3); }
+.send { width:38px; height:38px; flex-shrink:0; border:0; border-radius:50%; background:var(--brand); color:#fff; display:grid; place-items:center; transition:background .2s,opacity .2s; }
+.send:hover { background:var(--brand-hover); }
+.send:disabled { opacity:.35; cursor:not-allowed; }
+.send svg { width:18px; height:18px; }
+.disclaimer { text-align:center; color:var(--text2); font-size:.75rem; margin:8px 0 0; }
+
+/* Páginas */
+.page { max-width:840px; margin:0 auto; padding:32px 44px 48px; line-height:1.7; }
+.page h2 { font-size:1.4rem; line-height:1.4; margin:0 0 8px; }
+.page h3 { font-size:1.1rem; margin:28px 0 8px; }
+.page p.lead { color:var(--text2); margin:0 0 20px; }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.box { border:1px solid var(--b2); border-radius:16px; padding:16px 18px; }
+.box h4 { margin:0 0 6px; font-size:1rem; }
+.box ul { margin:0; padding-left:20px; color:var(--text2); }
+.stats { display:flex; flex-wrap:wrap; gap:12px; }
+.stat { flex:1; min-width:140px; border:1px solid var(--b2); border-radius:16px; padding:14px 18px; }
+.stat b { display:block; font-size:1.6rem; line-height:1.2; color:var(--brand-text); font-variant-numeric:tabular-nums; }
+.stat span { color:var(--text2); font-size:.85rem; }
+table { width:100%; border-collapse:collapse; font-size:.92rem; font-variant-numeric:tabular-nums; }
+th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--b2); }
+th { color:var(--text2); font-weight:600; }
+td.num, th.num { text-align:right; }
+.pipeline { display:flex; align-items:center; gap:10px; flex-wrap:wrap; color:var(--text2); }
+.pipeline span { border:1px solid var(--b2); border-radius:999px; padding:4px 12px; color:var(--text); }
+.tester { display:flex; gap:8px; margin:8px 0 12px; }
+.tester input { flex:1; min-width:0; font:inherit; color:inherit; background:var(--input); border:1px solid var(--b2); border-radius:12px; padding:9px 14px; }
+.btn { border:0; border-radius:12px; background:var(--brand); color:#fff; padding:9px 16px; }
+.btn:hover { background:var(--brand-hover); }
+.btn.ghost { background:transparent; border:1px solid var(--b2); color:var(--text); }
+.btn.ghost:hover { background:var(--hover); }
+.bar { display:grid; grid-template-columns:170px 1fr 52px; align-items:center; gap:10px; margin:6px 0; font-size:.9rem; }
+.bar .track { height:10px; border-radius:99px; background:var(--hover); overflow:hidden; }
+.bar .fill { height:100%; border-radius:99px; background:var(--brand); transition:width .3s; }
+.bar .pct { text-align:right; font-variant-numeric:tabular-nums; color:var(--text2); }
+.ex-group { margin-bottom:18px; }
+.ex-group h3 { margin:0 0 8px; font-size:1rem; }
+.ex-list { display:flex; flex-wrap:wrap; gap:8px; }
+
+.backdrop { display:none; }
+@media (max-width: 767px) {
+  .sider { position:fixed; inset:0 auto 0 0; z-index:20; transform:translateX(-100%); transition:transform .25s cubic-bezier(.4,0,.2,1); box-shadow:var(--shadow); }
+  .sider.open { transform:none; }
+  .backdrop.show { display:block; position:fixed; inset:0; z-index:15; background:rgba(0,0,0,.35); }
+  .topbar { display:flex; }
+  .list { padding:16px 16px 8px; }
+  .composer { padding:6px 16px 10px; }
+  .page { padding:20px 16px 40px; }
+  .cards, .grid2 { grid-template-columns:1fr; }
+  .welcome { margin-top:4vh; }
+  .bar { grid-template-columns:110px 1fr 46px; }
+}
+@media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <!-- Logo: mascota batería mirando de reojo, con distintivo de alerta -->
+  <linearGradient id="lg-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6E8FFF"/><stop offset="1" stop-color="#2A4FE6"/></linearGradient>
+  <linearGradient id="lg-w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E3EAFF"/></linearGradient>
+  <linearGradient id="lg-a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD166"/><stop offset="1" stop-color="#F0A21C"/></linearGradient>
+  <symbol id="i-logo" viewBox="0 0 64 64">
+    <circle cx="32" cy="32" r="32" fill="url(#lg-bg)"/><ellipse cx="32" cy="15" rx="22" ry="11" fill="#fff" opacity=".13"/>
+    <rect x="26" y="11" width="12" height="7" rx="2.5" fill="#fff"/>
+    <rect x="14" y="19.5" width="36" height="32" rx="10" fill="#1A36B0" opacity=".55"/><rect x="14" y="17" width="36" height="32" rx="10" fill="url(#lg-w)"/>
+    <circle cx="25" cy="31" r="4.8" fill="#fff" stroke="#14204F" stroke-width="1.6"/><circle cx="39" cy="31" r="4.8" fill="#fff" stroke="#14204F" stroke-width="1.6"/>
+    <circle cx="27.3" cy="31.4" r="2.4" fill="#14204F"/><circle cx="41.3" cy="31.4" r="2.4" fill="#14204F"/>
+    <path d="M20.5 24.6h8M35 22.6q4.5-2.8 8.8.6M28 41.2q4.5 1.6 8.5-1.6" stroke="#14204F" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+    <circle cx="47" cy="47" r="8" fill="url(#lg-a)" stroke="#fff" stroke-width="2"/><path d="M47 42.6v5" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><circle cx="47" cy="51" r="1.5" fill="#fff"/>
+  </symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+  <symbol id="i-brain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M6.5 6.5 9.8 9.8M17.5 6.5l-3.3 3.3M6.5 17.5l3.3-3.3M17.5 17.5l-3.3-3.3"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
+  <symbol id="i-img" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+</svg>
+
+<div class="app">
+  <aside class="sider" id="sider" aria-label="Menú principal">
+    <div class="brand"><span class="logo"><svg><use href="#i-logo"/></svg></span>Pilas</div>
+    <button class="new-chat" id="nuevo"><svg width="18" height="18"><use href="#i-plus"/></svg>Nueva conversación</button>
+    <nav>
+      <button class="nav-btn" data-view="chat" aria-current="page"><svg><use href="#i-chat"/></svg>Conversación</button>
+      <button class="nav-btn" data-view="ejemplos"><svg><use href="#i-list"/></svg>Ejemplos</button>
+      <button class="nav-btn" data-view="modelo"><svg><use href="#i-brain"/></svg>Cómo funciona</button>
+      <button class="nav-btn" data-view="ayuda"><svg><use href="#i-help"/></svg>Ayuda</button>
+    </nav>
+    <div class="sider-foot">
+      <div class="row"><span id="lbl-size">Texto</span>
+        <div class="seg" role="group" aria-labelledby="lbl-size">
+          <button data-size="sm" aria-label="Texto pequeño">A−</button><button data-size="md" aria-label="Texto normal">A</button><button data-size="lg" aria-label="Texto grande">A+</button><button data-size="xl" aria-label="Texto muy grande">A++</button>
+        </div></div>
+      <div class="row"><span id="lbl-theme">Tema</span>
+        <div class="seg" role="group" aria-labelledby="lbl-theme">
+          <button data-theme-set="light">Claro</button><button data-theme-set="dark">Oscuro</button><button data-theme-set="auto">Auto</button>
+        </div></div>
+    </div>
+  </aside>
+  <div class="backdrop" id="backdrop"></div>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn" id="abrir-menu" aria-label="Abrir menú" aria-controls="sider" aria-expanded="false"><svg><use href="#i-menu"/></svg></button>
+      <strong style="flex:1">Pilas</strong>
+      <button class="icon-btn" id="nuevo-m" aria-label="Nueva conversación"><svg><use href="#i-plus"/></svg></button>
+    </header>
+
+    <section class="view" id="view-chat" aria-label="Conversación">
+      <div class="scroll" id="scroll">
+        <div class="list" id="log" aria-live="polite">
+          <div class="welcome" id="welcome">
+            <div class="logo"><svg><use href="#i-logo"/></svg></div>
+            <h1>Hola, soy Pilas</h1>
+            <p>Antes de abrir un archivo, hacer un pago o escribir tu contraseña, cuéntame qué te llegó. Reviso contigo las señales de alerta y te digo qué hacer.</p>
+            <div class="cards" id="cards"></div>
+          </div>
+        </div>
+      </div>
+      <div class="composer">
+        <div class="chips" id="chips" role="group" aria-label="Respuestas rápidas"></div>
+        <div class="preview" id="preview" hidden></div>
+        <form class="input-box" id="form">
+          <button type="button" class="attach" id="adjuntar" aria-label="Adjuntar una captura de pantalla" title="Adjuntar una captura de pantalla"><svg><use href="#i-img"/></svg></button>
+          <input type="file" id="archivo" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp" hidden>
+          <label for="entrada" class="sr">Escribe tu mensaje</label>
+          <textarea id="entrada" rows="1" placeholder="Cuéntale a Pilas qué te llegó o adjunta una captura…" autocomplete="off"></textarea>
+          <button class="send" id="enviar" type="submit" aria-label="Enviar" disabled><svg><use href="#i-up"/></svg></button>
+        </form>
+        <p class="disclaimer">Pilas busca señales de alerta; no confirma ataques ni reemplaza al área de TI. No escribas contraseñas aquí.</p>
+      </div>
+    </section>
+
+    <section class="view" id="view-ejemplos" hidden aria-label="Ejemplos"><div class="scroll"><div class="page">
+      <h2>Ejemplos para probar</h2>
+      <p class="lead">Toca cualquiera y se envía a la conversación. También puedes escribir con tus propias palabras.</p>
+      <div id="ejemplos"></div>
+    </div></div></section>
+
+    <section class="view" id="view-modelo" hidden aria-label="Cómo funciona"><div class="scroll"><div class="page">
+      <h2>Cómo funciona Pilas</h2>
+      <p class="lead">Pilas combina reglas (primera generación) con un modelo entrenado que reconoce intenciones (segunda generación). Todo corre en tu navegador: nada de lo que escribes sale de este equipo.</p>
+      <div class="grid2">
+        <div class="box"><h4>Reglas · Gen 1</h4><ul>
+          <li>Saludos, agradecimientos, ayuda y glosario por coincidencia de patrones.</li>
+          <li>Entiende respuestas como "sí", "claro", "ni idea", "todavía no".</li>
+          <li>Saca datos del mensaje (Gmail, .zip, "ya pagué"…) para no repetir preguntas.</li>
+          <li>Árbol de decisión: preguntas → conteo de señales → recomendación.</li>
+        </ul></div>
+        <div class="box"><h4>Modelo entrenado · Gen 2</h4><ul>
+          <li>Regresión logística multiclase sobre palabras, raíces, pares de palabras y fragmentos de 4 letras (tolera errores de escritura). Une sinónimos como clave/contraseña o pc/computador.</li>
+          <li>Distingue una pregunta ("¿debo apagarlo?") de una descripción ("se apagó solo").</li>
+          <li>Se entrena cada vez que abres la página, con los ejemplos que puedes descargar al final.</li>
+          <li>Con menos de 30 % de confianza, o si no reconoce ninguna palabra, pide que lo digas de otra forma. Entre 30 % y 55 % pregunta "¿te refieres a…?". Si el tema no es suyo, lo dice.</li>
+        </ul></div>
+      </div>
+      <h3>Imágenes</h3>
+      <p style="margin:0">Cuando adjuntas una captura, Pilas calcula su huella SHA-256 y lee el texto con OCR (Tesseract). Ese texto pasa por el mismo modelo y las mismas reglas que un mensaje escrito.</p>
+      <h3>Datos → Entrenamiento → Modelo</h3>
+      <div class="pipeline"><span id="p-datos"></span>→<span id="p-train"></span>→<span id="p-modelo"></span></div>
+      <h3>Resultados con frases que el modelo no vio</h3>
+      <p id="metodo" style="color:var(--text2);margin:0 0 12px"></p>
+      <div class="stats" id="stats"></div>
+      <table style="margin-top:14px"><thead><tr><th>Intención</th><th class="num">Ejemplos</th><th class="num">Aciertos en prueba</th></tr></thead><tbody id="tabla"></tbody></table>
+      <h3>Probar el modelo</h3>
+      <p style="color:var(--text2);margin:0">Escribe una frase y mira la probabilidad que el modelo le da a cada intención.</p>
+      <form class="tester" id="tester"><label for="t-in" class="sr">Frase de prueba</label><input id="t-in" placeholder="Ej.: el jefe me pide plata por WhatsApp"><button class="btn">Probar</button></form>
+      <div id="barras"></div>
+      <h3>Datos de entrenamiento</h3>
+      <p style="color:var(--text2)">El archivo tiene las columnas <code>texto,categoria</code>, las mismas que pide el notebook NOVA del curso, por si quieren entrenar ahí un Transformer con estos datos.</p>
+      <button class="btn ghost" id="csv">Descargar datos (CSV)</button>
+    </div></div></section>
+
+    <section class="view" id="view-ayuda" hidden aria-label="Ayuda"><div class="scroll"><div class="page">
+      <h2>Ayuda</h2>
+      <h3>Cómo usar Pilas</h3>
+      <ul>
+        <li>Cuéntale con tus palabras qué te llegó: "me llegó una factura en zip", "el gerente me pide pagar hoy a otra cuenta".</li>
+        <li>Responde las preguntas escribiendo o con los botones que aparecen sobre la caja de texto.</li>
+        <li>Al final pregúntale "¿por qué?" y te explica la recomendación.</li>
+        <li>Puedes adjuntar una captura de pantalla del correo o mensaje con el botón de imagen, o pegarla con Ctrl + V en la caja de texto. Pilas lee el texto y calcula su huella SHA-256 para la cadena de custodia.</li>
+        <li>Enter envía el mensaje; Shift + Enter hace un salto de línea.</li>
+      </ul>
+      <h3>Qué sabe hacer</h3>
+      <ul>
+        <li>Revisar archivos adjuntos sospechosos.</li>
+        <li>Revisar pedidos de pago o cambios de cuenta bancaria.</li>
+        <li>Revisar páginas o correos que piden iniciar sesión.</li>
+        <li>Orientar si el equipo se comporta raro (virus, ransomware).</li>
+        <li>Explicar cómo guardar la evidencia de lo que pasó.</li>
+        <li>Explicar términos como phishing, ransomware, malware, fraude del CEO o doble factor.</li>
+      </ul>
+      <h3>Qué no hace</h3>
+      <ul>
+        <li>No confirma si algo es un ataque: habla de indicios. La confirmación le corresponde a TI o a un análisis forense.</li>
+        <li>No abre enlaces ni archivos. De las imágenes solo lee el texto; no sabe si una captura es real o fue editada.</li>
+        <li>No responde temas fuera de los fraudes y la seguridad en el trabajo; en esos casos te dice que consultes al área que corresponda.</li>
+      </ul>
+      <h3>Privacidad</h3>
+      <p>Pilas funciona dentro de tu navegador y no envía tus mensajes a ningún servidor. La conversación no se guarda: se borra al recargar la página o al tocar "Nueva conversación". Solo recuerda el tema y el tamaño de texto que elijas. Aun así, nunca escribas contraseñas, códigos ni números de cuenta en un chat.</p>
+      <p>Las imágenes también se procesan en tu navegador. La primera vez se descarga el lector de texto (Tesseract) desde internet, pero la imagen no sale de tu equipo. Antes de adjuntar una captura, tapa contraseñas y números de cuenta.</p>
+    </div></div></section>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   1. DATOS: intenciones, ejemplos de entrenamiento y árbol
+   ========================================================= */
+const INT = {
+  adjunto: {
+    titulo: "Un archivo adjunto",
+    ejemplos: [
+      "Me llegó una factura en un archivo zip que no esperaba", "Recibí un correo con un adjunto raro",
+      "Un proveedor me mandó un Excel que pide habilitar macros", "Me enviaron un documento que dice habilitar contenido",
+      "Llegó un archivo .exe en un correo de cotización", "Tengo un adjunto de un remitente que no conozco",
+      "me llego un pdf de una factura vencida de una empresa que no conozco", "Abrí un Word que venía en un correo y me pidió activar macros",
+      "Un cliente me mandó un rar con contraseña", "¿Es seguro abrir este archivo que me llegó?",
+      "Recibí una cotización comprimida en zip", "me mandaron un archivo para descargar desde un enlace de wetransfer que no pedí",
+      "Llegó un correo de la DIAN con un archivo adjunto", "un correo dice que adjunta el comprobante de pago pero yo no he pedido nada",
+      "¿Debo abrir el archivo que me envió un proveedor nuevo?", "descargué un archivo de un correo y no abre nada",
+      "el antivirus no dice nada pero el adjunto se ve raro", "Me llegó una orden de compra en un archivo .js",
+      "Recibí un adjunto llamado factura.pdf.exe", "tengo dudas con un documento que vino en el correo",
+      "Un archivo de excel me pide habilitar edición y contenido", "Llegó un correo de mensajería con la guía de envío adjunta",
+      "Me enviaron un archivo ISO por correo", "Recibí una hoja de vida en un archivo comprimido",
+      "un correo de un supuesto juzgado trae un archivo adjunto",
+      "Me llegó un correo con una factura adjunta de una empresa que no reconozco", "Recibí un archivo que se llama comprobante.zip", "un proveedor que no conozco me mandó una cotización en word", "Llegó un correo con un adjunto y el texto está mal escrito", "me enviaron un documento de la DIAN con macros", "Un correo trae un archivo html adjunto que pide abrirlo", "Me llegó un archivo con doble extensión", "recibí un excel de nómina que no esperaba", "Un correo dice que revise el archivo adjunto con urgencia", "Me llegó un PDF que me pide descargar un visor", "Me mandaron un acceso directo .lnk por correo", "un supuesto cliente me envió un pedido en archivo comprimido", "el documento adjunto me pide activar el contenido para verlo", "Me llegó una notificación judicial con un archivo para descargar", "No sé si abrir el adjunto de este correo",
+      "Me llegó un .rar protegido con clave desde un correo extraño", "Un correo trae un comprimido y la contraseña viene en el mismo mensaje", "Tengo dudas con un archivo que me mandaron por correo", "me llegó un documento adjunto que no sé si abrir", "Recibí una factura en un formato raro que no conozco", "El adjunto se llama pago_pendiente.exe", "Un correo de un banco trae un archivo para descargar el extracto", "Me mandaron un Word que dice que el contenido está protegido y hay que habilitarlo", "un proveedor nuevo me mandó un catálogo en zip", "Recibí un correo con un archivo .iso de una supuesta transportadora", "Me reenviaron una factura con un adjunto que pesa muy poco", "Llegó un correo de cobranza con un adjunto que no abre en el celular", "me enviaron un excel con macros desde un correo que no conozco", "El correo dice que el archivo adjunto es una citación", "Recibí un comprobante de consignación adjunto que no esperaba", "me llegó un pdf con un botón para ver el documento completo", "Un desconocido me envió fotos comprimidas en un zip", "Me llegó un correo de la Fiscalía con un documento adjunto", "un cliente que no reconozco me envió una orden de pedido adjunta", "Recibí un archivo con extensión .scr", "El adjunto me pide descargar un programa para verlo", "Me mandaron un Excel que se ve en blanco hasta habilitar contenido", "Llegó un correo de recursos humanos con un archivo de nómina adjunto que nadie pidió", "Me compartieron un archivo .html que abre un formulario", "¿Abro el adjunto que me llegó de una cuenta desconocida?",
+    ],
+    flujo: {
+      preguntas: [
+        { q: "¿Esperabas ese archivo?", riesgo: "no", senal: "no esperabas el archivo", ok: "sí esperabas el archivo",
+          por: "Los archivos maliciosos casi siempre llegan sin que nadie los pida, disfrazados de factura o cotización.",
+          detectar: { si: /\b(si lo esperaba|lo estaba esperando|yo lo pedi|lo solicite)\b/, no: /\b(no lo esperaba|no esperaba|inesperad\w*|no lo pedi|no pedi|no he pedido|nunca pedi|sin pedir)/ } },
+        { q: "¿El remitente es conocido y escribe desde la dirección de siempre?", riesgo: "no", senal: "remitente desconocido o con la dirección cambiada", ok: "el remitente es el de siempre",
+          por: "Los atacantes usan direcciones parecidas a las reales o se hacen pasar por empresas y entidades que conoces.",
+          detectar: { no: /\b(desconocid\w*|no conozco|no lo conozco|remitente raro|direccion rara|dominio raro|no se quien|supuest\w*|nuevo proveedor|proveedor nuevo)/, si: /\b(de siempre|ya conozco|cliente conocido|proveedor conocido)\b/ } },
+        { q: "¿Es un archivo .zip, .rar, .exe, .js o .iso, o te pidió \"habilitar contenido\" o \"habilitar macros\"?", riesgo: "si", senal: "tipo de archivo de riesgo o con macros", ok: "el tipo de archivo no es de los más riesgosos",
+          por: "Esos formatos pueden ejecutar programas en tu equipo. Las macros son la forma más común de esconder código dentro de un Word o un Excel.",
+          detectar: { si: /(\.(zip|rar|7z|exe|js|iso|docm|xlsm|scr|bat|vbs)\b|\b(zip|rar|exe|iso|macro|macros|comprimid\w*|habilitar contenido|habilitar edicion|activar macros|con contrasena)\b)/ } },
+      ],
+      decision: {
+        q: "¿Ya lo abriste?", hechoSi: "ya lo abriste", hechoNo: "todavía no lo abres",
+        por: "Lo que conviene hacer cambia mucho si el archivo ya se ejecutó o no.",
+        detectar: { no: /\b(no lo (he )?abiert\w*|no lo abri|sin abrir|todavia no lo abr\w*|aun no lo abr\w*|no he abierto|no lo he descargado)/,
+                    si: /\b(ya lo abri|lo abri|abri el|abri la|abri un|ya abri|doble clic|lo ejecute|habilite|lo descargue y|active (las )?macros)/ },
+        no: ["No lo abras.", "Llama al remitente a un número que ya conozcas para confirmar que lo envió.", "Reenvía el correo al área de TI."],
+        si: ["Desconecta el equipo de la red (wifi o cable), pero no lo apagues.", "No borres el correo.", "Avisa al área de TI de inmediato y anota la hora en que lo abriste."],
+        porqueNo: "Mientras no lo abras, el archivo no puede hacer nada. Confirmar por teléfono funciona porque el atacante controla el correo, no el teléfono de la otra persona.",
+        porqueSi: "Desconectar la red corta la comunicación del programa con el atacante y evita que llegue a otros equipos. No apagarlo es clave en informática forense: la memoria RAM guarda procesos, conexiones y a veces llaves de cifrado que se pierden al apagar.",
+      },
+    },
+  },
+  pago: {
+    titulo: "Un pago o cambio de cuenta",
+    ejemplos: [
+      "El gerente me escribió pidiendo una transferencia urgente", "Un proveedor dice que cambió su cuenta bancaria",
+      "Me pidieron pagar una factura a una cuenta nueva", "Mi jefe me escribe desde un Gmail para que pague hoy",
+      "Llegó un correo pidiendo consignar a otra cuenta", "el dueño de la empresa me pide un pago confidencial",
+      "Me piden hacer un giro y que no le cuente a nadie", "Un correo del proveedor tiene un nuevo número de cuenta",
+      "¿Debo pagar esta factura que llegó con datos bancarios distintos?", "el gerente está en una reunión y me pide transferir ya mismo",
+      "Me escribieron por WhatsApp haciéndose pasar por mi jefe para pedir plata", "me pidieron comprar tarjetas de regalo para el jefe",
+      "Recibí una solicitud de pago urgente del director financiero", "un cliente me pide devolverle un dinero a otra cuenta",
+      "el contador me manda un correo para cambiar la cuenta de nómina", "me llegó un correo de cobro con amenaza de embargo si no pago hoy",
+      "Un proveedor de siempre ahora pide pagar en otro banco", "Me piden adelantar un pago a un proveedor que no conozco",
+      "el correo del gerente tiene una letra cambiada y pide dinero", "Ya hice una transferencia que me pidió el jefe por correo",
+      "Me llamaron diciendo que eran del banco para autorizar un pago", "Recibí una factura con los datos de pago modificados",
+      "Un empleado pide que su sueldo se consigne en una cuenta nueva", "Me piden pagar con urgencia una deuda que no conocía",
+      "el gerente me pide que mande la plata por nequi",
+      "Me piden cambiar los datos bancarios de un proveedor", "El gerente me dice que haga un pago y que no lo llame porque está ocupado", "Recibí una factura con una cuenta bancaria diferente a la de siempre", "me escriben a nombre del gerente pidiendo una consignación", "Un proveedor nos escribe diciendo que ahora le paguemos en otra cuenta", "Me pidieron transferir dinero para cerrar un negocio confidencial", "El jefe me mandó un mensaje de un número nuevo pidiendo plata", "Me llegó una cuenta de cobro para pagar ya", "Me piden un pago anticipado para liberar un pedido", "la dueña me pide que le compre unas tarjetas de Google Play", "Un supuesto abogado de la empresa me pide transferir hoy", "Tengo que pagar una factura pero el número de cuenta cambió", "Me escribió el proveedor desde un correo distinto para el pago", "Me pidieron que haga un giro internacional urgente", "El gerente dice que transfiera y que después me explica",
+      "El contador me pide por correo cambiar la cuenta donde se paga la nómina", "Recibí un correo pidiendo actualizar los datos bancarios para la nómina", "Un proveedor me pide que le pague a la cuenta de un familiar", "el gerente me escribe por chat que necesita una transferencia antes del mediodía", "Me piden pagar una factura vencida a una cuenta en otro país", "Llegó un mensaje del jefe pidiendo comprar tarjetas prepago", "Me escribieron que si no pago hoy suspenden el servicio de la empresa", "Un supuesto proveedor envió una nueva certificación bancaria", "Me pidieron autorizar un pago que no estaba programado", "el director me escribe desde su correo personal para un pago urgente", "Recibí una cuenta de cobro de una empresa con la que no trabajamos", "me piden que adelante el pago de la nómina a otra cuenta", "El proveedor dice que su banco cambió y debemos pagar en uno nuevo", "Me llegó una solicitud para devolver un dinero que nos consignaron por error", "la gerente me pidió por WhatsApp una consignación y que no le diga a contabilidad", "Un correo me pide pagar una multa de la DIAN a una cuenta personal", "Me pidieron transferir para pagar la aduana de un pedido", "El jefe necesita que le envíe plata a un número de Nequi nuevo", "Llegó una factura igual a la de siempre pero con otro número de cuenta", "Un correo del abogado pide un depósito para cerrar un acuerdo", "Me piden aprobar un giro urgente sin la firma de gerencia", "el proveedor insiste en que paguemos hoy porque mañana sube el precio", "Me escribieron haciéndose pasar por el banco para confirmar una transferencia", "Me pidieron mandar plata para reclamar un supuesto premio de la empresa", "Debo hacer un pago que me pidió el gerente por mensaje de voz",
+    ],
+    flujo: {
+      preguntas: [
+        { q: "¿El mensaje llegó desde una cuenta personal (Gmail, Hotmail, WhatsApp…) o desde una dirección parecida a la de la empresa?", riesgo: "si", senal: "viene de una cuenta personal o de una dirección parecida", ok: "viene del correo corporativo",
+          por: "Un gerente o un proveedor real casi nunca pide pagos desde un Gmail. Una letra cambiada en la dirección es el truco más usado.",
+          detectar: { no: /\b(correo corporativo|correo de la empresa|dominio de la empresa|correo de siempre)\b/, si: /\b(gmail|hotmail|yahoo|outlook\.com|correo personal|whatsapp|letra cambiada|dominio (raro|parecido|distinto)|direccion (rara|parecida|distinta)|numero desconocido|otro numero)\b/ } },
+        { q: "¿Piden pagar a una cuenta nueva o distinta a la que ya está registrada?", riesgo: "si", senal: "piden pagar a una cuenta nueva", ok: "la cuenta es la registrada",
+          por: "El cambio de cuenta bancaria por correo es la señal más clara de este fraude: el dinero termina donde el atacante quiere.",
+          detectar: { no: /\b(misma cuenta|cuenta de siempre|cuenta registrada)\b/, si: /\b(cuenta nueva|nueva cuenta|otra cuenta|otro banco|cuenta (diferente|distinta)|cambi\w* (de |la |su |el numero de )?cuenta|nuevo numero de cuenta|datos (bancarios|de pago) (distintos|modificados|nuevos)|nequi|daviplata|tarjetas de regalo|bitcoin)/ } },
+        { q: "¿Te apuran o te piden que no se lo cuentes a nadie?", riesgo: "si", senal: "te presionan con tiempo o con secreto", ok: "no hay presión de tiempo ni secreto",
+          por: "La prisa y el secreto existen para que no alcances a verificar con nadie.",
+          detectar: { si: /\b(urgente|urgencia|hoy mismo|para hoy|pague hoy|pagar hoy|ya mismo|rapido|inmediat\w*|confidencial|secreto|discrecion|no le (digas|cuentes)|no se lo (digas|cuentes)|no (me )?llames|en (una )?reunion|embargo)\b/ } },
+      ],
+      decision: {
+        q: "¿Ya hiciste el pago o la transferencia?", hechoSi: "ya hiciste el pago", hechoNo: "todavía no has pagado",
+        por: "Si el dinero ya salió, cada minuto cuenta para intentar frenarlo.",
+        detectar: { no: /\b(no (he|hemos) (pagado|transferido|consignado|hecho)|todavia no (pago|pague|he pagado|transfier\w*|consign\w*)|aun no (pague|transferi)|sin pagar|antes de pagar|no pague|no he pagado)\b/,
+                    // "que pague hoy" es una petición, no un pago hecho: sin tildes "pague" y "pagué" se escriben igual.
+                    si: /\b(ya (pague|transferi|consigne|hice (el pago|la transferencia|una transferencia)|envie (la plata|el dinero))|hice (el pago|la transferencia|una transferencia))\b|(?<!\b(que|para|si|no|debo|tengo que|quiere que|pide que) )\b(pague|transferi|consigne)\b/ },
+        no: ["No hagas el pago todavía.", "Llama a la persona a un número que ya tengas guardado, nunca al que aparece en el mensaje.", "Reenvía el correo a TI y cuéntale a tu jefe directo."],
+        si: ["Llama ya a tu banco y pide que intenten detener o reversar la transferencia.", "Guarda el correo original tal como llegó (Archivo > Guardar como), no solo una captura.", "Avisa a gerencia y al área de TI, y anota la hora del pago.", "Si se confirma el fraude, denúncialo ante el CAI Virtual de la Policía Nacional o la Fiscalía."],
+        porqueNo: "Llamar por otro canal rompe el engaño: el atacante controla el correo, pero no contesta el teléfono real del gerente o del proveedor.",
+        porqueSi: "Los bancos a veces logran congelar el dinero si se les avisa en las primeras horas. El correo original guarda los encabezados técnicos (servidores, direcciones IP, fechas) que una captura pierde y que sirven como evidencia.",
+      },
+    },
+  },
+  login: {
+    titulo: "Me piden iniciar sesión",
+    ejemplos: [
+      "Me llegó un correo que dice que mi buzón está lleno", "Una página me pide iniciar sesión en Outlook otra vez",
+      "Me pidieron la contraseña del correo de la empresa", "Recibí un enlace para verificar mi cuenta de Microsoft",
+      "Un correo dice que mi contraseña vence hoy", "Puse mi clave en una página que parecía la del correo",
+      "Me pidieron el código de verificación que llegó a mi celular", "la página de inicio de sesión se ve rara",
+      "Me llegó un link para actualizar mis datos de acceso", "Un mensaje dice que mi cuenta será suspendida si no ingreso",
+      "Me pide la contraseña dos veces", "Creo que me robaron la clave del correo",
+      "un correo de soporte técnico me pide confirmar mi usuario y contraseña", "Entré a un enlace y me pidió iniciar sesión con Google",
+      "la dirección de la página de Office tiene letras raras", "Recibí un aviso de inicio de sesión desde otro país",
+      "alguien está entrando a mi correo", "me llegó un SMS con un enlace para desbloquear mi cuenta",
+      "Un correo de recursos humanos pide entrar al portal con mi clave", "Me salió una ventana pidiendo mi contraseña de Windows en el navegador",
+      "me pidieron compartir mi usuario del sistema contable", "un correo dice que hay un documento compartido y debo iniciar sesión para verlo",
+      "Me están pidiendo la clave del banco por un enlace", "ingresé mi contraseña en un link y ahora dudo",
+      "Mi correo empezó a enviar mensajes que yo no escribí",
+      "Me llegó un correo para restablecer mi contraseña que no pedí", "Una página idéntica a Outlook me pide la clave", "Me piden iniciar sesión para ver una factura compartida", "recibí un correo de seguridad de Microsoft para validar mi cuenta", "me llegó un mensaje para confirmar mi usuario del correo corporativo", "Me mandaron un link de OneDrive que pide mi contraseña", "me llegó un código de verificación que no pedí", "Alguien me escribió pidiendo el código que me llegó por SMS", "Una página me pide la clave del correo para descargar un archivo", "Me llegó un aviso de que cambiaron mi contraseña y yo no fui", "el correo dice que debo actualizar mi clave en las próximas horas", "Me pidieron iniciar sesión en una página de Google Drive rara", "me llegó un correo de que mi cuenta fue bloqueada con un enlace", "Creo que caí en una página falsa del correo", "Me salió un formulario pidiendo mi correo y contraseña",
+      "Un mensaje dice que mi cuenta quedará suspendida si no inicio sesión", "la página del correo tiene letras cambiadas en la dirección", "Mi cuenta está mandando correos que yo no envié", "me piden reactivar mi correo antes de que lo cierren", "Recibí un correo para verificar mi identidad en el portal de la empresa", "Me llegó un enlace para escuchar un mensaje de voz que pide iniciar sesión", "Un correo dice que alguien intentó entrar a mi cuenta y que confirme mi clave", "Me pidieron iniciar sesión para recibir un paquete", "la página del banco se ve distinta y me pide todos los datos", "Me llegó un mensaje de Microsoft 365 diciendo que mi licencia venció", "Mis compañeros dicen que les llegan correos raros desde mi cuenta", "Me sacaron de la sesión y ahora no puedo entrar al correo", "Me pidieron el código de seis dígitos que me llegó por mensaje", "Un formulario me pidió el usuario y la clave del sistema de la empresa", "Caí en un enlace que me pidió iniciar sesión con Microsoft", "Me llegó una alerta de inicio de sesión que no reconozco", "Recibí un correo de TI pidiendo que valide mi contraseña", "Un link de Dropbox me pide la clave del correo", "Me escribieron por WhatsApp pidiendo el código que me llegó", "El correo dice que mi buzón será eliminado si no confirmo mis datos", "Ingresé mi usuario en una página que se parecía a la del banco", "Alguien cambió la contraseña de mi correo", "Me salió una página pidiendo mi clave para ver una factura", "Me llegó un aviso de que hay un nuevo dispositivo en mi cuenta", "¿Es seguro iniciar sesión desde el enlace que me mandaron?",
+    ],
+    flujo: {
+      preguntas: [
+        { q: "¿Llegaste a esa página por un enlace de un correo o de un mensaje?", riesgo: "si", senal: "llegaste por un enlace", ok: "escribiste tú la dirección",
+          por: "Las páginas falsas casi siempre llegan por un enlace. Si tú escribes la dirección, es mucho más difícil caer.",
+          detectar: { no: /\b(escribi (yo )?la direccion|entre directo|desde favoritos|marcador)\b/, si: /\b(enlace|link|vinculo|me llego un (correo|mensaje|sms)|por (un )?(correo|mensaje|sms|whatsapp)|documento compartido|clic)\b/ } },
+        { q: "¿La dirección que ves en el navegador es la oficial (por ejemplo, outlook.office.com)?", riesgo: "no", senal: "la dirección no es la oficial", ok: "la dirección es la oficial",
+          por: "Una página falsa puede verse idéntica, pero la dirección nunca queda igual: siempre tiene algo distinto.",
+          detectar: { no: /\b(direccion (rara|extrana|distinta)|no es la oficial|letras raras|dominio raro|pagina (rara|falsa|extrana)|se ve rara|no se parece)\b/, si: /\b(es la oficial|direccion oficial|direccion correcta)\b/ } },
+        { q: "¿Te pidió la contraseña dos veces o el código de verificación que llega a tu celular?", riesgo: "si", senal: "pide la clave dos veces o el código de verificación", ok: "no pide datos extra",
+          por: "Pedir la clave dos veces es un truco para confirmar que la escribiste bien. Con el código de verificación pueden entrar aunque tengas doble factor.",
+          detectar: { si: /\b(dos veces|codigo|verificacion|otra vez|de nuevo|2fa|token)\b/ } },
+      ],
+      decision: {
+        q: "¿Ya escribiste tu contraseña o el código?", hechoSi: "ya escribiste tu contraseña", hechoNo: "todavía no escribes nada",
+        por: "Si la clave ya salió, hay que cambiarla antes de que la usen.",
+        detectar: { no: /\b(no (la |lo )?(escribi|puse|ingrese|meti|di)|no he (puesto|escrito|ingresado)|sin escribir)\b/,
+                    si: /\b(ya (la |lo )?(escribi|puse|meti|ingrese|di)|(puse|escribi|meti|ingrese|di) (mi|la|el) (clave|contrasena|codigo|usuario)|me robaron la (clave|contrasena)|entrando a mi correo|mensajes que yo no)\b/ },
+        no: ["Cierra esa pestaña sin escribir nada.", "Entra a tu correo escribiendo tú la dirección oficial o desde tus favoritos.", "Reenvía el mensaje a TI para que bloqueen el enlace."],
+        si: ["Cambia la contraseña ya, desde un equipo de confianza.", "Cierra todas las sesiones abiertas y activa el doble factor.", "Revisa si aparecieron reglas de reenvío o respuestas automáticas que no creaste.", "Avisa a TI y no borres el mensaje con el enlace."],
+        porqueNo: "Si no escribiste nada, el atacante no tiene nada. Entrar por tu cuenta te asegura que estás en la página real.",
+        porqueSi: "Cambiar la clave y cerrar sesiones saca al atacante. Las reglas de reenvío son su forma de seguir leyendo tu correo aunque cambies la contraseña. El mensaje original le sirve a TI para rastrear la página falsa.",
+      },
+    },
+  },
+  equipo: {
+    titulo: "Mi equipo se comporta raro",
+    ejemplos: [
+      "Mi computador está muy lento y salen ventanas raras", "Los archivos cambiaron de extensión y piden un rescate",
+      "Apareció un mensaje que dice que mis archivos están cifrados", "El antivirus detectó un virus",
+      "Se instaló un programa que yo no instalé", "El mouse se mueve solo",
+      "Creo que mi equipo tiene un virus", "no puedo abrir ninguno de mis documentos y hay una nota de rescate",
+      "el navegador abre páginas solas", "El ventilador suena mucho y el PC está lento desde ayer",
+      "Mi equipo se reinicia solo", "Me salió un aviso de que mi computador está infectado y que llame a un número",
+      "Hay un programa desconocido ejecutándose", "mi pc se puso raro después de abrir un archivo",
+      "Creo que tengo ransomware", "Los archivos de la carpeta compartida tienen nombres extraños",
+      "El antivirus se desactivó solo", "Aparecen iconos nuevos en el escritorio",
+      "Me piden pagar en bitcoin para recuperar mis archivos", "Alguien controla mi computador a distancia",
+      "Instalé un programa pirata y ahora todo falla", "Se me borraron archivos sin razón",
+      "mi equipo tiene malware", "Salen anuncios por todos lados en el computador",
+      "Conecté una USB que encontré y ahora el equipo hace cosas raras",
+      "El computador se volvió muy lento de repente", "Apareció un archivo de texto que dice cómo recuperar mis archivos", "Mis documentos ahora terminan en .locked", "El antivirus me muestra una alerta roja", "Se abren programas solos en el equipo", "El equipo se congela y sale una pantalla pidiendo pago", "La cámara del computador se prende sola", "Hay ventanas emergentes que no puedo cerrar", "Mi navegador cambió de página de inicio solo", "el pc se calienta mucho sin estar haciendo nada", "Mi computador de la oficina tiene virus", "No puedo entrar a mis archivos de la red", "El sistema contable no abre y aparece un mensaje en inglés pidiendo bitcoins", "Aparecen programas que no conozco al iniciar", "Creo que me hackearon el computador",
+      "El teclado escribe solo", "Salen mensajes de que el sistema está en peligro y que llame a soporte", "Hay una nota de texto en cada carpeta que dice cómo pagar", "La impresora de red imprime notas de rescate", "Se desactivó el firewall sin que yo hiciera nada", "El computador abre ventanas negras solo", "Mis archivos tienen un candado y no abren", "El equipo está mandando correos masivos solo", "Un programa me pide pagar para desbloquear el computador", "El antivirus dice que encontró un troyano", "Aparecieron extensiones raras en el navegador", "La computadora se apaga sola", "El disco está al cien por ciento todo el tiempo", "Hay un usuario nuevo en el computador que yo no creé", "Me cambiaron el fondo de pantalla por un mensaje de rescate", "No puedo abrir el administrador de tareas", "El equipo de contabilidad se volvió lentísimo y salen avisos", "Creo que alguien está usando mi computador de forma remota", "Se abrió una ventana con letras y se cerró sola", "El computador muestra publicidad aunque el navegador esté cerrado", "Todas las fotos de la carpeta compartida cambiaron de nombre", "Mi pc tiene un virus que no deja abrir el antivirus", "El equipo se puso raro después de conectar una memoria", "Hay programas raros y el internet del computador va lentísimo", "Los archivos del servidor aparecen cifrados",
+    ],
+    respuesta: { titulo: "Hay indicios de que el equipo podría estar comprometido. Mientras llega TI:",
+      pasos: ["Desconéctalo de la red (wifi o cable), pero no lo apagues.", "No pagues ningún rescate ni llames a números que aparezcan en avisos.", "No conectes memorias USB ni discos externos.", "Anota la hora y lo que viste: mensajes, nombres de archivos, ventanas.", "Avisa al área de TI de inmediato."] },
+    porque: "Desconectar evita que se propague a la carpeta compartida o a otros equipos. No apagar conserva la memoria RAM, donde quedan rastros del programa y a veces la llave de cifrado del ransomware. Y pagar el rescate no garantiza recuperar nada.",
+  },
+  evidencia: {
+    titulo: "Guardar la evidencia",
+    ejemplos: [
+      "¿Cómo guardo la evidencia de un correo falso?", "¿Debo borrar el correo sospechoso?",
+      "¿Qué hago para conservar las pruebas?", "¿Sirve una captura de pantalla como prueba?",
+      "Cómo descargo el correo original con encabezados", "¿Qué es la cadena de custodia?",
+      "¿Debo apagar el computador infectado?", "Quiero denunciar el fraude, ¿qué necesito?",
+      "¿Cómo documento lo que pasó?", "¿Qué información le doy a TI?",
+      "¿Puedo reenviar el correo a mis compañeros para avisarles?", "¿Dónde denuncio una estafa en Colombia?",
+      "Cómo preservo los mensajes de WhatsApp del estafador", "¿Formateo el computador?",
+      "Qué datos debo anotar del incidente", "¿Elimino el archivo malicioso?",
+      "Necesito guardar el comprobante de la transferencia", "¿Cómo exporto un correo como .eml?",
+      "¿Qué hago con el equipo afectado mientras llega TI?", "Quiero preservar la evidencia digital",
+      "¿Sirve de algo guardar los registros?", "¿Tengo que reportar esto a la policía?",
+      "cómo saco los encabezados de un correo en outlook", "¿Qué no debo hacer después de un incidente?",
+      "¿Debo bloquear al remitente y borrar todo?",
+      "¿Guardo una copia del correo falso?", "¿Cómo hago para que el correo sirva de prueba?", "¿Qué hago con los mensajes del estafador?", "¿Debo hacer capturas de pantalla?", "¿Cómo reporto un incidente a TI?", "¿Apago el equipo o lo dejo prendido?", "¿Qué datos necesita la policía para la denuncia?", "¿Cómo guardo el chat de WhatsApp como evidencia?", "¿Elimino el mensaje para no volver a verlo?", "¿Qué es la evidencia digital?", "¿Cómo hago un registro de lo que pasó?", "¿Puedo reinstalar Windows para limpiar el equipo?", "¿Qué debo conservar después de una estafa?", "¿A quién le entrego las pruebas?", "¿Cómo veo los encabezados de un correo en Gmail?",
+      "¿Qué le cuento al área de TI?", "¿Es necesario documentar todo lo que hice?", "¿Puedo limpiar el equipo con un antivirus antes de que llegue TI?", "¿Debo guardar el archivo adjunto o borrarlo?", "¿Puedo borrar los archivos sospechosos?", "¿Elimino el correo después de reportarlo?", "¿Cómo descargo el chat del estafador?", "¿Qué hago para que la denuncia tenga pruebas?", "¿Sirve tomar fotos de la pantalla con el celular?", "¿Cómo guardo la conversación con el supuesto proveedor?", "¿Quién debe custodiar las pruebas?", "¿Cómo demuestro que la captura no fue editada?", "¿Qué hago con el comprobante de la transferencia fraudulenta?", "¿Debo anotar la hora en que pasó todo?", "¿Puedo seguir usando el computador mientras investigan?", "¿Cómo se hace un informe del incidente?", "¿Qué pasa si ya borré el correo?", "¿Puedo recuperar el correo que eliminé para la denuncia?", "¿Guardo los números de teléfono del estafador?", "¿Cómo sé si una prueba digital es válida?", "¿Qué es una huella hash y para qué sirve?", "¿Desconecto el equipo o lo apago?", "¿Debo entregar el computador a TI?", "¿Qué debo hacer después de caer en una estafa?", "¿Cómo reporto un correo de phishing?",
+    ],
+    respuesta: { titulo: "Para que lo que pasó sirva como evidencia:",
+      pasos: ["No borres el correo ni el mensaje, y tampoco lo reenvíes a todo el mundo.", "Guarda el correo original (en Outlook: Archivo > Guardar como, formato .msg o .eml). Así se conservan los encabezados.", "Las capturas de pantalla ayudan, pero solo como complemento y con la fecha y la hora visibles.", "Anota qué pasó, a qué hora y qué hiciste tú.", "Si el equipo está afectado, no lo apagues ni lo formatees.", "Entrega todo a TI. Si hubo pérdida de dinero, denuncia ante el CAI Virtual de la Policía Nacional o la Fiscalía."] },
+    porque: "En un análisis forense la evidencia tiene que llegar intacta y con registro de quién la manejó, cuándo y cómo: eso es la cadena de custodia. Una captura se puede editar; el correo original con sus encabezados permite rastrear servidores y direcciones IP.",
+  },
+  fuera_de_tema: {
+    titulo: "Fuera de tema",
+    ejemplos: [
+      "¿Cómo preparo una torta de chocolate?", "¿Quién ganó el partido de ayer?", "¿Qué temperatura hará mañana?",
+      "¿Cuánto es siete más ocho?", "Recomiéndame una película", "¿Cuál es la capital de Japón?", "Cuéntame un chiste",
+      "¿Cómo instalo Office?", "Mi impresora no imprime", "¿Cómo hago una tabla dinámica en Excel?",
+      "¿Cuánto cuesta un dólar hoy?", "¿Me ayudas con la tarea de matemáticas?", "¿Cómo configuro un firewall empresarial?",
+      "¿Qué computador me recomiendas comprar?", "¿Cómo hago la declaración de renta?", "¿Cómo mejoro las ventas de mi empresa?",
+      "Escríbeme un poema", "¿Cuántos días de vacaciones me corresponden?", "¿Cómo programo en Python?",
+      "¿Qué canción está de moda?", "Cómo conecto el wifi de la oficina", "¿A qué hora abre el banco?",
+      "¿Cómo hago una factura electrónica?", "Dame una receta de arroz con pollo", "¿Qué es la inteligencia artificial?",
+      "¿Quién es el presidente de Colombia?", "¿Qué es la fotosíntesis?", "¿Cuál es el río más largo del mundo?", "Hazme un resumen de la Segunda Guerra Mundial", "¿Qué día es hoy?", "¿Cómo hago una hoja de vida?", "¿Me recomiendas un buen restaurante?", "¿Cómo se dice hola en inglés?", "¿Qué series hay en Netflix?", "¿Cómo bajo de peso?", "¿Qué hora es en Madrid?", "¿Cómo cambio el fondo de pantalla?", "¿Cuánto es el salario mínimo?", "¿Cuál es el mejor celular?", "Hablemos de fútbol",
+      "Necesito ayuda con la nómina", "Necesito ayuda con una fórmula de Excel", "Necesito redactar una carta de renuncia",
+      "Necesito liquidar las prestaciones de un empleado", "Necesito un informe de ventas para mañana",
+      "¿Cómo instalo una impresora nueva?", "¿Qué antivirus es el mejor del mercado?", "¿Cómo comparto una carpeta en Drive?", "¿Qué tiempo hace en Bogotá?", "¿Cómo hago un gráfico en Excel?", "¿Cuál es el horario de la oficina?", "¿Cómo pido vacaciones?", "Ayúdame a escribir un correo para un cliente", "¿Cómo calculo el IVA de una factura?", "¿Me ayudas a traducir un texto al inglés?", "¿Quién descubrió América?", "¿Cuántos habitantes tiene Colombia?", "Recomiéndame un libro", "¿Cómo hago una pizza casera?", "¿Cuál es la mejor universidad del país?", "¿Cómo actualizo Windows?", "¿Qué es la nube?", "¿Cómo conecto el proyector?", "¿Cuánto cuesta un portátil bueno?", "¿Cómo programo una reunión en Teams?", "¿Qué hago si olvidé el almuerzo?", "¿Cómo se juega ajedrez?", "¿Qué significa la palabra resiliencia?", "¿Cómo mejoro mi hoja de vida?", "¿Cómo hago una copia de un archivo en una USB?",
+    ],
+  },
+};
+const TEMAS = ["adjunto", "pago", "login", "equipo", "evidencia"];
+
+/* =========================================================
+   2. MODELO (Gen 2): regresión logística multiclase
+   ========================================================= */
+const STOP = new Set("de la el en y a que me mi un una los las lo se por con para del al es su le o pero como mas este esta eso esa hay fue son yo tu te nos les muy ya sus mis unos unas ha he han esto estoy tengo tiene si no".split(" "));
+const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9.@\s]/g, " ").replace(/\s+/g, " ").trim();
+
+// Sinónimos: palabras distintas que significan lo mismo cuentan como una sola.
+const SIN = { clave: "contrasena", password: "contrasena", link: "enlace", vinculo: "enlace", url: "enlace",
+  pc: "computador", compu: "computador", computadora: "computador", portatil: "computador", laptop: "computador", ordenador: "computador", equipo: "computador",
+  plata: "dinero", email: "correo", mail: "correo", jefe: "gerente", director: "gerente", dueno: "gerente", duena: "gerente",
+  consignar: "transferir", consignacion: "transferencia", giro: "transferencia", hackearon: "hackeo", hackeado: "hackeo" };
+
+function rasgos(texto) {
+  const palabras = norm(texto).split(" ").map(w => w.replace(/^\.+|\.+$/g, "")).filter(w => w && !STOP.has(w)).map(w => SIN[w] || w);
+  const f = new Set();
+  palabras.forEach((w, i) => {
+    f.add("w:" + w);
+    if (w.length > 5) f.add("p:" + w.slice(0, 5));            // raíz aproximada: pagar/pague/pago
+    const g = `<${w}>`;
+    for (let k = 0; k + 4 <= g.length; k++) f.add("c:" + g.slice(k, k + 4)); // tolera errores de escritura
+    if (i + 1 < palabras.length) f.add("b:" + w + "_" + palabras[i + 1]);
+  });
+  // Forma de pregunta: "¿Debo apagar el equipo?" (evidencia) no es lo mismo que "el equipo se apagó" (equipo).
+  if (/[?¿]/.test(texto)) f.add("q:?");
+  const w0 = norm(texto).split(" ")[0];
+  if (INTERROGATIVAS.has(w0)) f.add("q0:" + w0);
+  return [...f];
+}
+const INTERROGATIVAS = new Set("como que debo puedo cual cuanto cuantos donde quien sirve es tengo elimino guardo formateo desconecto apago borro".split(" "));
+
+const EPOCAS = 80;
+function entrenar(datos, epocas = EPOCAS, lr = 0.3, l2 = 1e-4) {
+  const clases = Object.keys(INT);
+  const W = clases.map(() => new Map()), b = clases.map(() => 0);
+  const X = datos.map(d => ({ f: rasgos(d.texto), y: clases.indexOf(d.categoria) }));
+  let semilla = 42; const azar = () => (semilla = (semilla * 16807) % 2147483647) / 2147483647;
+  const m = { clases, W, b };
+  for (let e = 0; e < epocas; e++) {
+    for (let i = X.length - 1; i > 0; i--) { const j = Math.floor(azar() * (i + 1)); [X[i], X[j]] = [X[j], X[i]]; }
+    for (const x of X) {
+      const p = probabilidades(m, x.f), s = 1 / Math.sqrt(x.f.length || 1);
+      p.forEach((pk, k) => {
+        const g = pk - (k === x.y ? 1 : 0);
+        b[k] -= lr * g;
+        for (const r of x.f) { const w = W[k].get(r) || 0; W[k].set(r, w - lr * (g * s + l2 * w)); }
+      });
+    }
+  }
+  return m;
+}
+
+function probabilidades(m, f) {
+  const s = 1 / Math.sqrt(f.length || 1);
+  const z = m.clases.map((_, k) => f.reduce((a, r) => a + (m.W[k].get(r) || 0) * s, m.b[k]));
+  const max = Math.max(...z), e = z.map(v => Math.exp(v - max)), t = e.reduce((a, v) => a + v, 0);
+  return e.map(v => v / t);
+}
+
+const DATOS = Object.entries(INT).flatMap(([c, it]) => it.ejemplos.map(texto => ({ texto, categoria: c })));
+// Evaluación honesta: 1 de cada 5 frases por intención queda fuera del entrenamiento.
+const PRUEBA = DATOS.filter((_, i) => i % 5 === 4), ENTRENO = DATOS.filter((_, i) => i % 5 !== 4);
+const modeloPrueba = entrenar(ENTRENO);
+const evaluacion = PRUEBA.map(d => ({ ...d, pred: predecir(d.texto, modeloPrueba)[0].c }));
+const MODELO = entrenar(DATOS); // el modelo final usa todos los ejemplos
+const VOCAB = new Set(DATOS.flatMap(d => rasgos(d.texto).filter(r => r.startsWith("w:"))));
+const conocidas = texto => rasgos(texto).filter(r => VOCAB.has(r)).length; // 0 = no reconoce ninguna palabra
+
+function predecir(texto, m = MODELO) {
+  return probabilidades(m, rasgos(texto)).map((p, k) => ({ c: m.clases[k], p })).sort((a, b) => b.p - a.p);
+}
+const UMBRAL_ALTO = 0.55, UMBRAL_BAJO = 0.30; // ponytail: umbrales fijos, calibrar con más datos de uso real
+
+/* =========================================================
+   3. REGLAS (Gen 1): patrones, sí/no, extracción de datos
+   ========================================================= */
+const R = {
+  reinicio: /^(menu|inicio|empezar de nuevo|reiniciar|volver a empezar|revisar otra cosa)$/,
+  saludo: /^(hola+|buenas|buenos dias|buenas tardes|buenas noches|hey|que tal|saludos|ola)\b/,
+  gracias: /\b(gracias|te agradezco|muy amable)\b/,
+  despedida: /^(chao|adios|hasta luego|bye|nos vemos)\b/,
+  ayuda: /^(ayuda|help|que puedes hacer|que haces|que sabes hacer|para que sirves|como funcionas|quien eres|que eres)\b/,
+  porque: /\b(por ?que|para que sirve|explica\w*|no entiendo por que)\b/,
+};
+// "¿por qué?" es una pregunta; "porque me llegó por correo" es una respuesta.
+const preguntaPorQue = (texto, t) => R.porque.test(t) && (texto.includes("?") || !/^porque\b/.test(t));
+
+// Respuestas libres a cada pregunta del árbol (se usan solo mientras Pilas espera esa respuesta).
+// Orden por pregunta: [pregunta 0, pregunta 1, pregunta 2, decisión].
+const RESPUESTAS = {
+  adjunto: [
+    { si: /\b(lo esperaba|lo estaba esperando|me (dijo|dijeron|aviso|avisaron)|lo (pedi|solicite)|ya sabia|estaba pendiente)\b/,
+      no: /\b(no lo esperaba|no esperaba|no lo pedi|nadie (lo )?pidio|de la nada|sin avisar|de sorpresa|nunca)\b/ },
+    { si: /\b(lo conozco|la conozco|es conocid\w*|de siempre|es (mi|un|el|la) (jefe|gerente|proveedor|cliente|companer\w*|contador\w*)|trabajo con)\b/,
+      no: /\b(no (lo|la) conozco|desconocid\w*|nunca (lo|la) habia visto|nuev[oa]s?|primera vez|direccion (rara|distinta|diferente|cambiada)|letra cambiada|parecid\w*|no es (la|el) de siempre|otra direccion)\b/ },
+    { si: /(\.(zip|rar|7z|exe|js|iso|docm|xlsm|scr|bat|vbs|lnk|html?)\b|\b(zip|rar|exe|iso|comprimid\w*|macros?|habilitar|contenido|edicion|ejecutable|programa)\b)/,
+      no: /\b(pdf|jpg|jpeg|png|imagen|foto|normal|no pide nada|no pidio nada|no me pidio nada|ninguno|ninguna)\b/ },
+    { si: /\b((ya )?lo abri|abri|le di (doble )?clic|lo ejecute|lo descargue y lo abri|habilite|active|lo vi|lo revise)\b/,
+      no: /\b(no (lo )?(he )?(abierto|abri|ejecutado|toque)|todavia no|aun no|sin abrir|ni lo abri)\b/ },
+  ],
+  pago: [
+    { si: /\b(gmail|hotmail|yahoo|outlook\.com|personal|whatsapp|wasap|sms|mensaje de texto|numero (nuevo|desconocido|raro|que no)|otro numero|letra cambiada|parecid\w*|rar[oa]|distint[oa]|diferente)\b/,
+      no: /\b(corporativo|de la empresa|empresarial|institucional|de siempre|oficial)\b/ },
+    { si: /\b(nueva|otra|diferente|distinta|cambi\w*|nequi|daviplata|bitcoin|tarjetas?|otro banco)\b/,
+      no: /\b(la misma|misma|la de siempre|la registrada|la que (ya )?(tenemos|teniamos)|de siempre)\b/ },
+    { si: /\b(urgente|urgencia|hoy|ya mismo|para ya|ahora mismo|cuanto antes|lo antes posible|rapido|inmediat\w*|confidencial|secreto|discrecion|nadie|presion\w*|apur\w*|afan)\b/,
+      no: /\b(normal|tranquil\w*|sin afan|no hay afan|ninguna)\b/ },
+    { si: /\b(ya (pague|transferi|consigne|lo hice|hice)|pague|transferi|consigne|lo hice|hice (el pago|la transferencia)|ya salio|ya se fue)\b/,
+      no: /\b(no (he|hemos) (pagado|transferido|consignado|hecho)|no lo (he hecho|hice)|todavia no|aun no|no pague|no transferi|sin pagar|no alcance)\b/ },
+  ],
+  login: [
+    { si: /\b(correo|mensaje|sms|whatsapp|wasap|enlace|link|chat|email|mail|notificacion|clic)\b/,
+      no: /\b(escribi|busque|google|favoritos|marcador|directamente|por mi cuenta|yo (misma|mismo))\b/ },
+    { si: /\b(oficial|correcta|normal|la de siempre|igual)\b/,
+      no: /\b(rar[oa]|extran[oa]|distinta|diferente|no es (la )?oficial|no se parece|cambiad\w*|letras|numeros|larga|sospechos\w*|no es la)\b/ },
+    { si: /\b(dos veces|codigo|verificacion|otra vez|de nuevo|2fa|token|repetir|las dos|ambas)\b/,
+      no: /\b(una (sola )?vez|solo (una vez|la (clave|contrasena))|nada (mas|raro))\b/ },
+    { si: /\b(ya )?((la|lo) )?(escribi|puse|ingrese|meti)\b|\b(la|lo) di\b/,
+      no: /\b(no (la |lo )?(escribi|puse|ingrese|meti|di)|no he (puesto|escrito|ingresado)|todavia no|aun no|cerre|sin escribir|no alcance)\b/ },
+  ],
+};
+const OPCIONES = { "pago.0": ["Desde una cuenta personal o WhatsApp", "Desde el correo de la empresa", "No sé"],
+                   "login.0": ["Por un correo", "Por un mensaje", "Escribí la dirección yo", "No sé"] };
+Object.entries(RESPUESTAS).forEach(([id, rs]) => {
+  const f = INT[id].flujo;
+  rs.forEach((r, i) => { (i < f.preguntas.length ? f.preguntas[i] : f.decision).resp = r; });
+});
+const opcionesDe = (id, e) => (OPCIONES[`${id}.${e.tipo === "q" ? e.i : "d"}`] || ["Sí", "No", "No sé"]).map(label => ({ label }));
+
+// Interpreta la respuesta a la pregunta actual. Si es ambigua, gana la opción de riesgo (más prudente).
+function interpretar(q, t) {
+  if (NOSE.test(t)) return "nose";
+  const sinNegar = t.replace(/\bno (me |le |lo |la |nos |se )?\w+/g, " "); // "no me apuró" no cuenta como "apuró"
+  for (const v of q.riesgo === "si" ? ["si", "no"] : ["no", "si"]) if (q.resp?.[v]?.test(v === "si" ? sinNegar : t)) return v;
+  return sino(t) || (q.detectar.no?.test(t) ? "no" : q.detectar.si?.test(t) ? "si" : null);
+}
+const GLOSARIO = [
+  [/\bque es (el |un )?phishing\b/, "El <b>phishing</b> es un engaño por correo, mensaje o página falsa para que entregues datos, contraseñas o dinero haciéndote creer que hablas con alguien de confianza."],
+  [/\bque es (el |un )?ransomware\b/, "El <b>ransomware</b> es un programa que cifra los archivos del equipo y pide un pago para devolverlos. Pagar no garantiza recuperarlos."],
+  [/\bque es (el |un )?(malware|virus)\b/, "<b>Malware</b> es cualquier programa hecho para dañar o espiar un equipo: virus, troyanos, ransomware, programas que roban contraseñas."],
+  [/\bque es (el )?(bec|fraude del ceo|fraude del gerente)\b/, "El <b>fraude del CEO</b> (o BEC) es cuando alguien se hace pasar por el gerente o un proveedor para pedir una transferencia urgente o un cambio de cuenta."],
+  [/\bque es (el |la )?(doble factor|2fa|autenticacion de dos factores)\b/, "El <b>doble factor</b> pide, además de la contraseña, un código que llega a tu celular. Así, aunque roben la clave, no pueden entrar sin ese código."],
+];
+
+// "no sé" solo como frase propia: sin tildes, "no se ve rara" también contiene "no se".
+const NOSE = /\b(ni idea|no estoy segur\w*|no sabria|no lo se|quizas|tal vez|puede ser|no recuerdo|no me acuerdo)\b|\bno se( (si|bien|que|creo|exactamente|la verdad)\b|$)/;
+function sino(t) {
+  if (NOSE.test(t)) return "nose";
+  if (/\b(creo que no|parece que no|me parece que no)\b/.test(t)) return "no";
+  if (/\b(creo que si|parece que si|me parece que si|eso creo)\b/.test(t)) return "si";
+  if (/^(si+|sip|claro|correcto|exacto|asi es|afirmativo|efectivamente|ya|obvio|seguro|por supuesto|de una)\b/.test(t)) return "si";
+  if (/^(no+|nop|nope|negativo|nunca|todavia no|aun no|para nada|nada)\b/.test(t)) return "no";
+  return null;
+}
+
+function extraer(id, t) {
+  const f = INT[id].flujo, out = {};
+  if (!f) return out;
+  f.preguntas.forEach((q, i) => {
+    if (q.detectar.no?.test(t)) out[i] = "no"; else if (q.detectar.si?.test(t)) out[i] = "si";
+  });
+  if (f.decision.detectar.no.test(t)) out.d = "no"; else if (f.decision.detectar.si.test(t)) out.d = "si";
+  return out;
+}
+
+function describir(id, resp) {
+  const f = INT[id].flujo;
+  return Object.entries(resp).map(([k, v]) => k === "d"
+    ? (v === "si" ? f.decision.hechoSi : f.decision.hechoNo)
+    : (v === f.preguntas[k].riesgo ? f.preguntas[k].senal : f.preguntas[k].ok));
+}
+
+function senalesDe(id, resp) {
+  return INT[id].flujo.preguntas.flatMap((q, i) =>
+    resp[i] === q.riesgo ? [q.senal] : resp[i] === "nose" ? [q.senal + " (sin confirmar)"] : []);
+}
+
+// Nunca confirma un ataque: solo habla de indicios según cuántas señales hubo.
+function nivel(s) {
+  const lista = s.length ? ul(s) : "";
+  if (!s.length) return `<div class="nivel n0"><span class="tag">Sin señales claras.</span> No veo alertas en lo que me contaste, pero igual vale la pena verificar antes de actuar.</div>`;
+  if (s.length <= 2) return `<div class="nivel n1"><span class="tag">Hay indicios de riesgo.</span> Encontré ${s.length === 1 ? "una señal" : "dos señales"} de alerta:${lista}</div>`;
+  return `<div class="nivel n2"><span class="tag">Hay varios indicios fuertes.</span> Encontré ${s.length} señales que se repiten mucho en fraudes. No puedo confirmar que lo sea; eso le corresponde a TI:${lista}</div>`;
+}
+
+/* =========================================================
+   4. CONVERSACIÓN: combina reglas, contexto y modelo
+   ========================================================= */
+const SINO = [{ label: "Sí" }, { label: "No" }, { label: "No sé" }];
+const MENU = TEMAS.map(id => ({ label: INT[id].titulo, value: "i:" + id }));
+const FIN = [{ label: "¿Por qué?" }, { label: "Revisar otra cosa", value: "menu" }];
+const nuevoCtx = () => ({ flujo: null, resp: {}, esperando: null, ultimo: null, nivelDicho: false, pendiente: "" });
+let ctx = nuevoCtx();
+const ul = xs => "<ul>" + xs.map(x => `<li>${x}</li>`).join("") + "</ul>";
+const pct = p => Math.round(p * 100) + "%";
+
+function manejar(texto, valor) {
+  if (valor === "menu") return menu("¿Qué quieres revisar ahora?");
+  if (valor?.startsWith("i:")) return iniciar(valor.slice(2), ctx.esperando?.tipo === "confirmar" ? ctx.pendiente : "");
+  const t = norm(texto);
+  if (!t) return;
+
+  // 1) Reglas generales
+  if (R.reinicio.test(t)) return menu("Listo. ¿Qué quieres revisar?");
+  if (R.saludo.test(t) && t.split(" ").length <= 3) return menu("¡Hola! Cuéntame qué te llegó o elige una opción:");
+  if (R.gracias.test(t) && t.split(" ").length <= 5) { say("Con gusto. Si te llega algo más, aquí estoy."); return chips(MENU); }
+  if (R.despedida.test(t)) { say("Hasta luego. Recuerda: ante la duda, verifica por otro canal antes de actuar."); return; }
+  if (R.ayuda.test(t)) return menu(`Soy Pilas. Te ayudo a revisar señales de fraude en el trabajo:${ul(TEMAS.map(id => INT[id].titulo))}Escríbeme con tus palabras o elige una opción.`);
+  const g = GLOSARIO.find(([re]) => re.test(t));
+  if (g) { say(g[1]); return chips(MENU); }
+
+  // 2) Respuesta a una pregunta que hizo Pilas
+  const e = ctx.esperando;
+  if (e?.tipo === "confirmar") {
+    const r = sino(t);
+    if (r === "si") return iniciar(e.opcion, ctx.pendiente);
+    if (r) { ctx.esperando = null; return menu("Entendido. Cuéntamelo con otras palabras o elige una opción:"); }
+  }
+  if (e?.tipo === "q" || e?.tipo === "d") {
+    const f = INT[ctx.flujo].flujo, q = e.tipo === "q" ? f.preguntas[e.i] : f.decision;
+    if (preguntaPorQue(texto, t)) { say(q.por); return repreguntar(); }
+    const r = interpretar(q, t);
+    if (r) {
+      // Si la respuesta trae más datos ("por un mensaje y me pidió el código"), también se anotan.
+      const actual = e.tipo === "q" ? String(e.i) : "d";
+      for (const [k, v] of Object.entries(extraer(ctx.flujo, t))) if (k !== actual && !(k in ctx.resp)) ctx.resp[k] = v;
+      return responder(r);
+    }
+    const nuevos = extraer(ctx.flujo, t);
+    if (Object.keys(nuevos).length) { Object.assign(ctx.resp, nuevos); say("Anotado:" + ul(describir(ctx.flujo, nuevos))); return siguiente(); }
+  }
+
+  // 3) Seguimiento: usa el contexto de la conversación anterior
+  if (preguntaPorQue(texto, t) && ctx.ultimo) return explicar();
+  if (ctx.ultimo && INT[ctx.ultimo].flujo) {
+    const n = extraer(ctx.ultimo, t);
+    if ("d" in n) {
+      const hecho = INT[ctx.ultimo].flujo.decision[n.d === "si" ? "hechoSi" : "hechoNo"];
+      say(n.d !== ctx.resp.d ? `Entonces cambia la recomendación, porque ${hecho}.` : `Eso ya lo tuve en cuenta: como ${hecho}, esto es lo que te recomiendo.`);
+      ctx.flujo = ctx.ultimo; ctx.resp.d = n.d;
+      return final();
+    }
+  }
+
+  // 4) Modelo entrenado: reconoce la intención
+  const [a, b] = predecir(texto);
+  const meta = `${INT[a.c].titulo} · ${pct(a.p)} de confianza`;
+  // Mientras espera una respuesta, solo cambia de tema si el mensaje es claramente otro asunto.
+  const esperaRespuesta = e?.tipo === "q" || e?.tipo === "d";
+  if (esperaRespuesta && (a.p < UMBRAL_ALTO || a.c === ctx.flujo || t.split(" ").length <= 6)) return repreguntar("No me quedó claro.");
+  if (e && a.p < UMBRAL_ALTO) return repreguntar("No te entendí bien.");
+  if (!conocidas(texto) || a.p < UMBRAL_BAJO) return noEntiendo();
+  if (a.c === "fuera_de_tema") return limites(meta);
+  if (a.p < UMBRAL_ALTO) return confirmar(a, b, texto, meta);
+  iniciar(a.c, texto, meta);
+}
+
+function iniciar(id, texto = "", meta = null) {
+  const it = INT[id];
+  if (!it.flujo) {
+    ctx = { ...nuevoCtx(), ultimo: id };
+    say(`<p><b>${it.respuesta.titulo}</b></p>${ul(it.respuesta.pasos)}`, meta);
+    return chips(FIN);
+  }
+  if (ctx.flujo !== id || !texto) ctx = { ...nuevoCtx(), flujo: id };
+  ctx.esperando = null;
+  const nuevos = extraer(id, norm(texto));
+  Object.assign(ctx.resp, nuevos);
+  const hechos = describir(id, nuevos);
+  say(hechos.length
+    ? `Entiendo. Tema: <b>${it.titulo.toLowerCase()}</b>. De lo que me contaste tomé esto:${ul(hechos)}`
+    : `Listo, revisemos tu caso (<b>${it.titulo.toLowerCase()}</b>). Te haré unas preguntas cortas.`, meta);
+  siguiente();
+}
+
+function siguiente() {
+  const f = INT[ctx.flujo].flujo;
+  const i = f.preguntas.findIndex((_, k) => !(k in ctx.resp));
+  if (i >= 0) { ctx.esperando = { tipo: "q", i }; say(f.preguntas[i].q); return chips(opcionesDe(ctx.flujo, ctx.esperando)); }
+  if (!ctx.nivelDicho) { ctx.nivelDicho = true; say(nivel(senalesDe(ctx.flujo, ctx.resp))); }
+  if (!("d" in ctx.resp)) { ctx.esperando = { tipo: "d" }; say(f.decision.q); return chips(SINO); }
+  final();
+}
+
+function responder(r) {
+  const e = ctx.esperando;
+  if (e.tipo === "q") ctx.resp[e.i] = r;
+  else {
+    if (r === "nose") say("Si no estás seguro, lo más prudente es actuar como si sí hubiera pasado.");
+    ctx.resp.d = r === "no" ? "no" : "si";
+  }
+  ctx.esperando = null;
+  siguiente();
+}
+
+function repreguntar(prefijo = "") {
+  const f = INT[ctx.flujo].flujo, e = ctx.esperando;
+  say(`${prefijo ? prefijo + " " : ""}${e.tipo === "q" ? f.preguntas[e.i].q : f.decision.q} <span style="color:var(--text2)">Puedes contestarme con tus palabras o con los botones.</span>`);
+  chips(opcionesDe(ctx.flujo, e));
+}
+
+function final() {
+  const f = INT[ctx.flujo].flujo, si = ctx.resp.d === "si";
+  say(`<p><b>${si ? "Para contener el daño:" : "Para prevenir:"}</b></p>${ul(si ? f.decision.si : f.decision.no)}`);
+  ctx.esperando = null; ctx.ultimo = ctx.flujo;
+  chips(FIN);
+}
+
+function explicar() {
+  const it = INT[ctx.ultimo];
+  say(it.flujo ? it.flujo.decision[ctx.resp.d === "si" ? "porqueSi" : "porqueNo"] : it.porque);
+  chips([{ label: "Revisar otra cosa", value: "menu" }]);
+}
+
+function confirmar(a, b, texto, meta) {
+  ctx.esperando = { tipo: "confirmar", opcion: a.c }; ctx.pendiente = texto;
+  say(`Creo que me hablas de <b>${INT[a.c].titulo.toLowerCase()}</b>, pero no estoy del todo seguro. ¿Es eso?`, meta);
+  const ops = [{ label: "Sí, es eso" }];
+  if (b.c !== "fuera_de_tema") ops.push({ label: INT[b.c].titulo, value: "i:" + b.c });
+  ops.push({ label: "No, es otra cosa" });
+  chips(ops);
+}
+
+function limites(meta) {
+  ctx.esperando = null;
+  say(`Eso se sale de lo que sé hacer. Solo ayudo con señales de fraude en el trabajo: archivos adjuntos, pedidos de pago, páginas que piden tu contraseña, equipos que se comportan raro y cómo guardar la evidencia. Para otros temas, consulta al área que corresponda.`, meta);
+  chips(MENU);
+}
+
+function noEntiendo() {
+  ctx.esperando = null;
+  say(`No estoy seguro de haberte entendido. ¿Me lo cuentas con otras palabras? Por ejemplo: <i>"me llegó una factura en zip"</i>. También puedes elegir:`);
+  chips(MENU);
+}
+
+function menu(texto) { ctx.esperando = null; say(texto); chips(MENU); }
+
+/* =========================================================
+   5. INTERFAZ
+   ========================================================= */
+const $ = s => document.querySelector(s);
+const log = $("#log"), scroll = $("#scroll"), chipsEl = $("#chips"), entrada = $("#entrada"), btnEnviar = $("#enviar");
+const rapido = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const dormir = ms => new Promise(r => setTimeout(r, rapido ? 0 : ms));
+let cola = Promise.resolve();
+const LOGO = '<span class="logo" aria-hidden="true"><svg><use href="#i-logo"/></svg></span>';
+
+function abajo() { scroll.scrollTop = scroll.scrollHeight; }
+const esc = s => s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+// Mensaje de Pilas con indicador de "escribiendo" (y un estado opcional mientras trabaja).
+function burbujaBot() {
+  const m = document.createElement("div");
+  m.className = "msg bot";
+  m.innerHTML = `${LOGO}<div class="content"><div class="typing" aria-label="Pilas está escribiendo"><span></span><span></span><span></span><em class="typing-label"></em></div></div>`;
+  log.append(m); abajo();
+  return {
+    estado: t => { m.querySelector(".typing-label").textContent = t; },
+    listo: html => { m.querySelector(".content").innerHTML = html; abajo(); },
+  };
+}
+function say(html, meta) {
+  cola = cola.then(async () => {
+    const m = burbujaBot();
+    await dormir(350 + Math.min(html.length * 3, 650));
+    m.listo((/^\s*</.test(html) ? html : `<p>${html}</p>`) + (meta ? `<div class="meta">Intención detectada: ${meta}</div>` : ""));
+  });
+}
+function chips(lista) {
+  cola = cola.then(() => {
+    chipsEl.replaceChildren(...lista.map(({ label, value }) => {
+      const b = document.createElement("button");
+      b.className = "chip"; b.type = "button"; b.textContent = label;
+      b.onclick = () => enviar(label, value);
+      return b;
+    }));
+  });
+}
+function enviar(texto, valor) {
+  texto = texto.trim();
+  if (!texto) return;
+  $("#welcome")?.remove();
+  chipsEl.replaceChildren();
+  const u = document.createElement("div");
+  u.className = "msg user";
+  u.innerHTML = '<div class="bubble"></div>';
+  u.firstChild.textContent = texto;      // texto del usuario siempre como texto plano
+  log.append(u); abajo();
+  manejar(texto, valor);
+}
+
+$("#form").onsubmit = ev => {
+  ev.preventDefault();
+  const v = entrada.value, f = adjunto;
+  entrada.value = ""; quitarAdjunto();
+  f ? enviarImagen(f, v) : enviar(v);
+};
+entrada.onkeydown = ev => { if (ev.key === "Enter" && !ev.shiftKey) { ev.preventDefault(); $("#form").requestSubmit(); } };
+function ajustar() { entrada.style.height = "auto"; entrada.style.height = entrada.scrollHeight + "px"; btnEnviar.disabled = !entrada.value.trim() && !adjunto; }
+entrada.oninput = ajustar;
+
+/* Imágenes: huella SHA-256 + lectura del texto (OCR). La imagen nunca sale del navegador. */
+const TIPOS_IMG = ["image/png", "image/jpeg", "image/webp", "image/gif", "image/bmp"], MAX_MB = 10;
+const preview = $("#preview"), archivo = $("#archivo");
+let adjunto = null;
+$("#adjuntar").onclick = () => archivo.click();
+archivo.onchange = () => { if (archivo.files[0]) ponerAdjunto(archivo.files[0]); archivo.value = ""; };
+entrada.onpaste = ev => {
+  const f = [...ev.clipboardData.files].find(x => x.type.startsWith("image/"));
+  if (f) { ev.preventDefault(); ponerAdjunto(f); }
+};
+function ponerAdjunto(f) {
+  if (!TIPOS_IMG.includes(f.type)) { $("#welcome")?.remove(); return say("Solo puedo recibir imágenes (PNG, JPG, WEBP, GIF o BMP). No abro enlaces ni otros archivos."); }
+  if (f.size > MAX_MB * 1048576) { $("#welcome")?.remove(); return say(`Esa imagen pesa más de ${MAX_MB} MB. Prueba con una captura más liviana.`); }
+  adjunto = f;
+  preview.innerHTML = `<img alt=""><span></span><button type="button" aria-label="Quitar imagen">✕</button>`;
+  preview.querySelector("img").src = URL.createObjectURL(f);
+  preview.querySelector("span").textContent = f.name || "captura";
+  preview.querySelector("button").onclick = () => { quitarAdjunto(); entrada.focus(); };
+  preview.hidden = false; ajustar(); entrada.focus();
+}
+function quitarAdjunto() { adjunto = null; preview.hidden = true; preview.replaceChildren(); ajustar(); }
+
+function enviarImagen(f, texto) {
+  texto = texto.trim();
+  $("#welcome")?.remove(); chipsEl.replaceChildren();
+  const u = document.createElement("div"), b = document.createElement("div"), img = document.createElement("img");
+  u.className = "msg user"; b.className = "bubble";
+  img.src = URL.createObjectURL(f); img.alt = "Imagen adjunta: " + (f.name || "captura");
+  b.append(img); if (texto) b.append(texto);
+  u.append(b); log.append(u); abajo();
+  cola = cola.then(() => procesarImagen(f, texto));
+}
+
+async function sha256(f) {
+  const h = await crypto.subtle.digest("SHA-256", await f.arrayBuffer());
+  return [...new Uint8Array(h)].map(x => x.toString(16).padStart(2, "0")).join("");
+}
+
+// ponytail: Tesseract se descarga del CDN la primera vez (necesita internet); empaquetarlo local si se usa sin conexión.
+let lector = null, progresoOCR = () => {};
+const cargarScript = src => new Promise((ok, mal) => { const s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = mal; document.head.append(s); });
+async function leerTexto(f, progreso) {
+  progresoOCR = progreso;
+  if (!lector) lector = (async () => {
+    progreso("Cargando el lector de texto (solo la primera vez)…");
+    await cargarScript("https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js");
+    return Tesseract.createWorker("spa", 1, { logger: m => m.status === "recognizing text" && progresoOCR(`Leyendo el texto… ${Math.round(m.progress * 100)}%`) });
+  })().catch(e => { lector = null; throw e; });
+  const w = await lector;
+  progreso("Leyendo el texto…");
+  return (await w.recognize(f)).data.text;
+}
+
+async function procesarImagen(f, texto) {
+  const m = burbujaBot();
+  m.estado("Revisando la imagen…");
+  const huella = await sha256(f).catch(() => null);
+  let leido = "", fallo = false;
+  try { leido = (await leerTexto(f, m.estado)).replace(/\s+/g, " ").trim(); } catch { fallo = true; }
+  const partes = [`<p>Recibí tu imagen <b>${esc(f.name || "captura")}</b> (${Math.max(1, Math.round(f.size / 1024))} KB).</p>`];
+  if (huella) partes.push(`<p>Huella SHA-256: <code class="hash">${huella}</code><br><span style="color:var(--text2);font-size:.9rem">Si la anotas junto con la imagen, sirve para demostrar después que no fue modificada (cadena de custodia).</span></p>`);
+  const legible = !fallo && leido.length >= 15;
+  if (fallo) partes.push("<p>No pude cargar el lector de texto; necesita internet la primera vez. Cuéntame con tus palabras qué dice la imagen.</p>");
+  else if (!legible) partes.push("<p>No encontré texto legible. Funciono mejor con capturas de pantalla de correos o mensajes; cuéntame con tus palabras qué muestra.</p>");
+  else partes.push(`<p>Esto alcancé a leer:</p><div class="ocr">${esc(leido.slice(0, 400))}${leido.length > 400 ? "…" : ""}</div><p>Lo reviso como si me lo hubieras escrito. Solo leo el texto: no puedo saber si la captura es real o fue editada.</p>`);
+  m.listo(partes.join(""));
+  if (legible) analizarTexto(`${texto} ${leido}`.trim());
+  else if (texto) manejar(texto);
+  else chips(MENU);
+}
+
+// El texto de una imagen puede responder la pregunta pendiente o abrir un tema nuevo.
+function analizarTexto(t) {
+  const e = ctx.esperando;
+  if (e && e.tipo !== "confirmar" && ctx.flujo) {
+    const n = extraer(ctx.flujo, norm(t));
+    if (Object.keys(n).length) { Object.assign(ctx.resp, n); say("De la imagen tomé esto:" + ul(describir(ctx.flujo, n))); return siguiente(); }
+  }
+  ctx.esperando = null;
+  manejar(t);
+}
+
+function reiniciar() {
+  cola = Promise.resolve(); ctx = nuevoCtx(); chipsEl.replaceChildren();
+  log.innerHTML = `<div class="welcome" id="welcome">${bienvenida}</div>`;
+  pintarTarjetas(); verVista("chat"); entrada.focus();
+}
+const bienvenida = $("#welcome").innerHTML;
+$("#nuevo").onclick = reiniciar; $("#nuevo-m").onclick = reiniciar;
+
+const SUGERENCIAS = [
+  ["Archivo adjunto", "Me llegó una factura en .zip de un proveedor que no conozco"],
+  ["Pago", "El gerente me escribe desde un Gmail para que pague hoy a una cuenta nueva"],
+  ["Contraseña", "Un correo dice que mi buzón está lleno y me pide iniciar sesión"],
+  ["Evidencia", "¿Cómo guardo el correo como prueba?"],
+];
+function pintarTarjetas() {
+  const c = $("#cards"); if (!c) return;
+  c.replaceChildren(...SUGERENCIAS.map(([t, s]) => {
+    const b = document.createElement("button");
+    b.className = "card"; b.type = "button";
+    b.innerHTML = `<b>${t}</b>`; b.append(s);
+    b.onclick = () => enviar(s);
+    return b;
+  }));
+}
+
+// Vistas y menú lateral
+const sider = $("#sider"), backdrop = $("#backdrop"), btnMenu = $("#abrir-menu");
+function menuMovil(abrir) { sider.classList.toggle("open", abrir); backdrop.classList.toggle("show", abrir); btnMenu.setAttribute("aria-expanded", abrir); }
+btnMenu.onclick = () => menuMovil(true); backdrop.onclick = () => menuMovil(false);
+function verVista(v) {
+  document.querySelectorAll(".view").forEach(s => s.hidden = s.id !== "view-" + v);
+  document.querySelectorAll(".nav-btn").forEach(b => b.dataset.view === v ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current"));
+  menuMovil(false);
+}
+document.querySelectorAll(".nav-btn").forEach(b => b.onclick = () => verVista(b.dataset.view));
+
+// Tema y tamaño de texto (preferencias locales)
+const guardar = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
+const leer = k => { try { return localStorage.getItem(k); } catch { return null; } };
+function aplicar(tipo, v) {
+  if (tipo === "size") document.documentElement.dataset.size = v;
+  else v === "auto" ? delete document.documentElement.dataset.theme : document.documentElement.dataset.theme = v;
+  document.querySelectorAll(tipo === "size" ? "[data-size]" : "[data-theme-set]").forEach(b =>
+    b.setAttribute("aria-pressed", (tipo === "size" ? b.dataset.size : b.dataset.themeSet) === v));
+  guardar("pilas-" + tipo, v);
+}
+document.querySelectorAll(".seg [data-size]").forEach(b => b.onclick = () => aplicar("size", b.dataset.size));
+document.querySelectorAll("[data-theme-set]").forEach(b => b.onclick = () => aplicar("theme", b.dataset.themeSet));
+aplicar("size", leer("pilas-size") || "md"); aplicar("theme", leer("pilas-theme") || "auto");
+
+// Página de ejemplos
+const EJEMPLOS_UI = {
+  adjunto: ["Me mandaron una cotización comprimida que nunca pedí", "Abrí un Excel de un proveedor y le di habilitar contenido"],
+  pago: ["El jefe me pide por WhatsApp que consigne hoy a otra cuenta", "Un proveedor cambió el número de cuenta y no he pagado"],
+  login: ["Me llegó un link de Microsoft para verificar mi cuenta", "Ya puse mi contraseña en una página que se veía rara"],
+  equipo: ["Todos mis archivos tienen otra extensión y hay una nota", "Desde ayer el computador va lentísimo"],
+  evidencia: ["¿Puedo borrar el correo falso?", "¿Qué le entrego a TI?"],
+  fuera_de_tema: ["¿Quién ganó el partido?", "¿Cómo hago una tabla dinámica?"],
+  conversacion: ["hola", "¿qué es phishing?", "gracias"],
+};
+$("#ejemplos").replaceChildren(...Object.entries(EJEMPLOS_UI).map(([id, xs]) => {
+  const g = document.createElement("div"); g.className = "ex-group";
+  g.innerHTML = `<h3>${INT[id]?.titulo || "Conversación general"}</h3><div class="ex-list"></div>`;
+  g.lastChild.append(...xs.map(x => { const b = document.createElement("button"); b.className = "chip"; b.textContent = x; b.onclick = () => { verVista("chat"); enviar(x); }; return b; }));
+  return g;
+}));
+
+// Página "Cómo funciona"
+const aciertos = evaluacion.filter(d => d.pred === d.categoria).length;
+$("#p-datos").textContent = `${DATOS.length} frases · ${Object.keys(INT).length} intenciones`;
+$("#p-train").textContent = `${EPOCAS} épocas · regresión logística`;
+$("#p-modelo").textContent = "Intención + confianza";
+$("#metodo").textContent = `Para medirlo se aparta 1 de cada 5 frases (${PRUEBA.length}), se entrena un modelo con las otras ${ENTRENO.length} y se prueba con las apartadas. El modelo que usa el chat se entrena después con las ${DATOS.length}.`;
+$("#stats").innerHTML = `<div class="stat"><b>${DATOS.length}</b><span>ejemplos de entrenamiento</span></div>
+  <div class="stat"><b>${Object.keys(INT).length}</b><span>intenciones</span></div>
+  <div class="stat"><b>${pct(aciertos / evaluacion.length)}</b><span>aciertos en ${evaluacion.length} frases de prueba</span></div>`;
+$("#tabla").innerHTML = Object.entries(INT).map(([c, it]) => {
+  const ev = evaluacion.filter(d => d.categoria === c);
+  return `<tr><td>${it.titulo}</td><td class="num">${it.ejemplos.length}</td><td class="num">${ev.filter(d => d.pred === c).length} de ${ev.length}</td></tr>`;
+}).join("");
+$("#tester").onsubmit = ev => {
+  ev.preventDefault();
+  const v = $("#t-in").value.trim(); if (!v) return;
+  $("#barras").innerHTML = predecir(v).map(({ c, p }) =>
+    `<div class="bar"><span>${INT[c].titulo}</span><div class="track"><div class="fill" style="width:${p * 100}%"></div></div><span class="pct">${pct(p)}</span></div>`).join("");
+};
+$("#csv").onclick = () => {
+  const csv = "texto,categoria\n" + DATOS.map(d => `"${d.texto.replace(/"/g, '""')}",${d.categoria}`).join("\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" }));
+  a.download = "pilas_datos.csv"; a.click(); URL.revokeObjectURL(a.href);
+};
+
+pintarTarjetas();
+
+/* =========================================================
+   6. AUTOPRUEBA (consola): falla si se rompe la lógica
+   ========================================================= */
+(function autoprueba() {
+  const casos = [
+    ["me mandaron una factura comprimida que nunca pedí", "adjunto"],
+    ["el jefe me pide consignar a una cuenta distinta hoy", "pago"],
+    ["me salió una página igualita a la de outlook pidiendo mi clave", "login"],
+    ["mi computador se volvió lento y aparecen avisos de virus", "equipo"],
+    ["cómo guardo el correo como prueba", "evidencia"],
+    ["cuál es el mejor restaurante de la ciudad", "fuera_de_tema"],
+  ];
+  const fallos = casos.filter(([t, c]) => predecir(t)[0].c !== c);
+  console.assert(!fallos.length, "Modelo falló en:", fallos.map(([t]) => [t, predecir(t)[0]]));
+  console.assert(sino("no se") === "nose" && sino("si claro") === "si" && sino("todavia no") === "no", "sino()");
+  const p = extraer("pago", norm("Me escribe desde Gmail, pide una cuenta nueva, es urgente y ya pagué"));
+  console.assert(p[0] === "si" && p[1] === "si" && p[2] === "si" && p.d === "si", "extraer pago", p);
+  console.assert(extraer("adjunto", norm("no lo he abierto")).d === "no", "negación antes que afirmación");
+  console.assert(!("d" in extraer("pago", norm("me pide que pague hoy a otra cuenta"))), "'que pague' no es un pago hecho");
+  // Respuestas libres a las preguntas del árbol (antes solo aceptaba sí/no/no sé)
+  const L = INT.login.flujo, P = INT.pago.flujo;
+  console.assert(interpretar(L.preguntas[0], norm("a través de un mensaje")) === "si", "responde 'por un mensaje'");
+  console.assert(interpretar(L.preguntas[0], norm("escribí la dirección yo")) === "no", "responde 'la escribí yo'");
+  console.assert(interpretar(L.preguntas[1], norm("no, se ve rara")) === "no", "'no se ve' no es 'no sé'");
+  console.assert(interpretar(P.preguntas[2], norm("no me apuró")) === "no", "respeta la negación");
+  console.assert(interpretar(L.decision, norm("no la escribí")) === "no", "negación en la decisión");
+  console.assert(!/es un ataque|esta infectado/.test(nivel(["a", "b", "c"])), "nivel nunca confirma ataques");
+  console.info(`Pilas: ${casos.length - fallos.length}/${casos.length} frases nuevas bien clasificadas · prueba ${aciertos}/${evaluacion.length}`);
+})();
+</script>
+</body>
+</html>
